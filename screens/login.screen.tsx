@@ -23,7 +23,7 @@ export default function LoginScreen() {
                 <Text className="mt-4 text-3xl font-bold text-slate-600">
                     Đăng nhập với
                 </Text>
-                <TouchableOpacity className="mt-4 p-4 rounded-lg bg-[#E5E7EA]">
+                <TouchableOpacity className="mt-4 p-4 rounded-lg bg-[#E5E7EA]" onPress={() => router.push('/(tabs)')}>
                     <Image 
                         className="w-[45px] h-[45px]"
                         source={require('@/assets/images/google-logo.png')} 
