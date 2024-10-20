@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "toiec_practice_app",
-    "slug": "toiec_practice_app",
+    "name": "temp",
+    "slug": "temp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/Main-Logo.png",
