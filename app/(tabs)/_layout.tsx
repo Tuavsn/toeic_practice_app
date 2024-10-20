@@ -21,19 +21,15 @@ export default function TabsLayout() {
                         case "statistic/index":
                             iconName = <FontAwesome name="bar-chart" size={30} color="#004B8D" />
                             break;
-                        case "profile/index":
-                            iconName = <FontAwesome name="user-circle" size={30} color="#004B8D" />
-                            break;
                     }
                     return iconName
-                },
+                },  
                 headerShown: false,
                 tabBarShowLabel: false
             })} >
                 <Tabs.Screen name="index" />
                 <Tabs.Screen name="search/index" />
                 <Tabs.Screen name="statistic/index" />
-                <Tabs.Screen name="profile/index" />
             </Tabs>
         </SafeAreaView>
     )
