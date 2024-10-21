@@ -2,6 +2,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import Header from "@/components/header/Header";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { DrawerToggleButton } from "@react-navigation/drawer";
 
 export default function TabsLayout() {
 
@@ -25,11 +26,12 @@ export default function TabsLayout() {
                     return iconName
                 },  
                 headerShown: false,
-                tabBarShowLabel: false
+                tabBarShowLabel: false,
+                // headerLeft: () => <DrawerToggleButton tintColor='#000' />
             })} >
-                <Tabs.Screen name="index" />
-                <Tabs.Screen name="search/index" />
-                <Tabs.Screen name="statistic/index" />
+                <Tabs.Screen name="index"/>
+                <Tabs.Screen name="search/index"/>
+                <Tabs.Screen name="statistic/index"/>
             </Tabs>
         </SafeAreaView>
     )

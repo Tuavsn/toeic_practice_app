@@ -11,7 +11,7 @@ export default function index() {
             {loading ? (
                 <Loader />
             ) : (
-                <Redirect href={user ? "/(tabs)/" : "/(routes)/welcome-intro"} />
+                <Redirect href={user ? "/(drawer)/" : "/welcome-intro"} />
             )}
         </>
     )

@@ -1,35 +1,21 @@
-import useAuth from "@/hooks/auth/useAuth";
-import { FontAwesome, Fontisto } from "@expo/vector-icons";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Fontisto, Ionicons } from "@expo/vector-icons";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { TouchableOpacity, View } from "react-native";
 
 export default function Header() {
 
-    const { loading, user } = useAuth()
+    const navigation = useNavigation();
 
     return (
         <View className="flex flex-row items-center justify-between px-2 py-4">
             <View className="flex flex-row items-center">
-                <TouchableOpacity className="mx-4">
-                    {
-                        user ? (
-                            <Image
-                                width={70}
-                                height={70}
-                                source={{uri: 'https://lh3.googleusercontent.com/a/ACg8ocIaWmYeQTzXapMs5L7_okIgL05hMYCAMdcITw1QW_k-uuVqsTfW=s432-c-no'}}
-                            />
-                        ) : (
-                            <FontAwesome name="user-circle" size={60} color="#637794" />
-                        )
-                    }
+                <TouchableOpacity className="mx-2 bg-white px-3 py-2 rounded-xl" style={{elevation: 1}} onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}>
+                    <Ionicons name="menu" size={35} color="#004B8D" />
                 </TouchableOpacity>
-                <View>
-                    <Text className="text-[#004B8D] font-bold text-lg">Xin chào</Text>
-                    <Text className="font-bold text-xl">Học Tuấn</Text>
-                </View>
             </View>
             <View>
-                <TouchableOpacity className="mx-4">
-                    <Fontisto name="bell" size={30} color="#004B8D" />
+                <TouchableOpacity className="mx-2 bg-white px-4 py-2 rounded-xl" style={{elevation: 1}}>
+                    <Fontisto name="bell" size={35} color="#004B8D" />
                 </TouchableOpacity>
             </View>
         </View>

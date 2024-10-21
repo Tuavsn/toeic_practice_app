@@ -24,12 +24,10 @@ export default function RootLayout() {
   }
 
   return (
-    <>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name='index' />
-        <Stack.Screen name='(routes)/welcome-intro/index' />
-        <Stack.Screen name='(routes)/login/index' />
-      </Stack>
-    </>
+    <Stack>
+      <Stack.Screen name='index' options={{ headerShown: false }}/>
+      <Stack.Screen name='welcome-intro'  options={{ headerShown: false }}/>
+      <Stack.Screen name='(drawer)'  options={{ headerShown: false }}/>
+    </Stack>
   );
 }

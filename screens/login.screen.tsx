@@ -9,21 +9,21 @@ export default function LoginScreen() {
 
     return (
         <SafeAreaView className="flex-1">
-            <View className="flex-1 items-center justify-center">
-                <TouchableOpacity
-                    className="absolute top-4 left-5 px-5 py-4 rounded-lg bg-[#E5E7EA]"
-                    onPress={() => router.back()}
-                >
-                    <Ionicons name="chevron-back" size={24} color="black" />
-                </TouchableOpacity>
+            <TouchableOpacity
+                className="absolute top-4 left-5 px-5 py-4 rounded-lg bg-[#E5E7EA]"
+                onPress={() => router.push('/(drawer)')}
+            >
+                <Ionicons name="chevron-back" size={24} color="#004B8D" />
+            </TouchableOpacity>
+            <View className="flex-1 items-center mt-44">
                 <Image 
                     className="w-[300px]"
                     source={require('@/assets/images/Login-logo.png')}
                 />
-                <Text className="mt-4 text-3xl font-bold text-slate-600">
+                <Text className="mt-4 text-3xl font-bold text-[#004B8D]">
                     Đăng nhập với
                 </Text>
-                <TouchableOpacity className="mt-4 p-4 rounded-lg bg-[#E5E7EA]" onPress={() => router.push('/(tabs)')}>
+                <TouchableOpacity className="mt-4 p-4 rounded-lg bg-[#E5E7EA]" style={{elevation: 2}} onPress={() => router.push('/(drawer)')}>
                     <Image 
                         className="w-[45px] h-[45px]"
                         source={require('@/assets/images/google-logo.png')} 
