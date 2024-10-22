@@ -1,6 +1,6 @@
 import LoginScreen from "@/screens/login.screen";
 
-export default function Login() {
+export default function LoginDrawItem() {
     return (
         <LoginScreen />
     )

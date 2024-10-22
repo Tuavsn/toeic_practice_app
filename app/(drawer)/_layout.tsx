@@ -3,7 +3,7 @@ import { router, useNavigation } from 'expo-router';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Drawer } from "expo-router/drawer";
 import { Image, Text, View } from 'react-native';
-import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
+import { AntDesign, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import useAuth from '@/hooks/auth/useAuth';
 
 const DrawerContent = () => {
@@ -31,41 +31,61 @@ const DrawerContent = () => {
       </View>
       <DrawerItem
         icon={({ color, size }) => (
-          <Feather
-            name="list"
-            size={size}
-            color={"#fff"}
-          />
-        )}
-        label={"Đăng nhập"}
-        labelStyle={[
-          { color: "#fff"},
-        ]}
-        style={{ backgroundColor: "#333"}}
-        onPress={() => {
-          router.push("/login");
-        }}
-      />
-      <DrawerItem
-        icon={({ color, size }) => (
           <AntDesign
             name="user"
             size={size}
-            color="#fff"
+            color="#333"
           />
         )}
-        label={"Profile"}
-        labelStyle={{color: "#fff"}}
-        style={{ backgroundColor: "#333"}}
+        label={"Thông tin tài khoản"}
+        labelStyle={{color: "#333"}}
+        style={{ backgroundColor: "white", elevation: 3}}
         onPress={() => {
-          router.push("/login");
+          router.push("/profile");
         }}
       />
+      {user ? (
+        <DrawerItem
+          icon={({ color, size }) =>
+            <MaterialIcons
+              name="logout"
+              size={size}
+              color={"#333"}
+            />
+          }
+          label={"Đăng xuất"}
+          labelStyle={[
+            { color: "#333"},
+          ]}
+          style={{ backgroundColor: "white", elevation: 3}}
+          onPress={() => {
+            router.push("/login");
+          }}
+        />
+      ) : (
+        <DrawerItem
+          icon={({ color, size }) =>
+            <MaterialIcons
+              name="login"
+              size={size}
+              color={"#333"}
+            />
+          }
+          label={"Đăng nhập"}
+          labelStyle={[
+            { color: "#333"},
+          ]}
+          style={{ backgroundColor: "white", elevation: 3}}
+          onPress={() => {
+            router.push("/login");
+          }}
+        />
+      )}
     </DrawerContentScrollView>
   )
 }
 
-export default function DrawerLayout() {
+export default function DrawersLayout() {
 
   const nav = useNavigation()
 

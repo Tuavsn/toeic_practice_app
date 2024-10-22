@@ -1,6 +1,6 @@
 import HomeScreen from "@/screens/home.screen";
 
-export default function index() {
+export default function HomeTabItem() {
     return (
         <HomeScreen />
     )
