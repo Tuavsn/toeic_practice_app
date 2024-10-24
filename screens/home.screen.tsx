@@ -5,7 +5,7 @@ import { ScrollView, Text, View } from "react-native";
 
 export default function HomeScreen() {
     return (
-        <ScrollView className="px-4">
+        <ScrollView className="px-4 mt-4">
             <View>
                 <Text>
                     <Text className="text-3xl font-bold text-[#004B8D]">Toiec</Text>
@@ -15,7 +15,7 @@ export default function HomeScreen() {
             {/* Discover study path */}
             <DiscoverStudyPath />
             <Text className="text-2xl font-bold text-[#004B8D] my-2">Luyện tập</Text>
-            {/* Menu buttons */}
+            {/* Practice Menu buttons */}
             <HomeMenuButtons />
             {/* Practice history */}
             <Text className="text-2xl font-bold text-[#004B8D] mb-2 mt-6">Lịch sử</Text>

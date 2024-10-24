@@ -1,14 +1,20 @@
 import { Entypo, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export default function HomeMenuButtons() {
+
+    const router = useRouter()
+
     return (
         <View className="flex gap-5">
             <View className="flex flex-row justify-between">
                 <TouchableOpacity className="bg-white p-3 rounded-2xl flex flex-col justify-center items-center w-[120]" style={{
                     shadowColor: "#171717",
                     elevation: 5
-                }}>
+                }}
+                onPress={() => router.push('/(main)/course')}
+                >
                     <FontAwesome5 name="headphones" size={40} color="#004B8D" />
                     <Text className="font-bold text-lg text-[#004B8D]">Listening</Text>
                 </TouchableOpacity>

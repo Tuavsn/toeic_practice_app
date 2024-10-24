@@ -27,7 +27,6 @@ export default function TabsLayout() {
                 },  
                 headerShown: false,
                 tabBarShowLabel: false,
-                // headerLeft: () => <DrawerToggleButton tintColor='#000' />
             })} >
                 <Tabs.Screen name="index"/>
                 <Tabs.Screen name="search/index"/>

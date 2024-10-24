@@ -26,58 +26,62 @@ const DrawerContent = () => {
         }
         <View>
           <Text className="text-[#004B8D] font-bold text-lg">Xin chào</Text>
-          <Text className="font-bold text-xl">Học Tuấn</Text>
+          {user && (
+            <Text className="font-bold text-xl">Học Tuấn</Text>
+          )}
         </View>
       </View>
-      <DrawerItem
-        icon={({ color, size }) => (
-          <AntDesign
-            name="user"
-            size={size}
-            color="#333"
-          />
-        )}
-        label={"Thông tin tài khoản"}
-        labelStyle={{color: "#333"}}
-        style={{ backgroundColor: "white", elevation: 3}}
-        onPress={() => {
-          router.push("/profile");
-        }}
-      />
       {user ? (
-        <DrawerItem
-          icon={({ color, size }) =>
-            <MaterialIcons
-              name="logout"
-              size={size}
-              color={"#333"}
-            />
-          }
-          label={"Đăng xuất"}
-          labelStyle={[
-            { color: "#333"},
-          ]}
-          style={{ backgroundColor: "white", elevation: 3}}
-          onPress={() => {
-            router.push("/login");
-          }}
-        />
+        <>
+          <DrawerItem
+            icon={({ color, size }) => (
+              <AntDesign
+                name="user"
+                size={size}
+                color="white"
+              />
+            )}
+            label={"Profile"}
+            labelStyle={{color: "white"}}
+            style={{ backgroundColor: "#004B8D", elevation: 5}}
+            onPress={() => {
+              router.push("/profile");
+            }}
+          />
+          <DrawerItem
+            icon={({ color, size }) =>
+              <MaterialIcons
+                name="logout"
+                size={size}
+                color={"white"}
+              />
+            }
+            label={"Đăng xuất"}
+            labelStyle={[
+              { color: "white"},
+            ]}
+            style={{ backgroundColor: "#004B8D", elevation: 5}}
+            onPress={() => {
+              router.push("/login");
+            }}
+          />
+        </>
       ) : (
         <DrawerItem
           icon={({ color, size }) =>
             <MaterialIcons
               name="login"
               size={size}
-              color={"#333"}
+              color={"white"}
             />
           }
           label={"Đăng nhập"}
           labelStyle={[
-            { color: "#333"},
+            { color: "white"},
           ]}
-          style={{ backgroundColor: "white", elevation: 3}}
+          style={{ backgroundColor: "#004B8D", elevation: 5}}
           onPress={() => {
-            router.push("/login");
+            router.push("/(auth)/login");
           }}
         />
       )}
@@ -90,8 +94,6 @@ export default function DrawersLayout() {
   const nav = useNavigation()
 
   return (
-    <Drawer drawerContent={() => <DrawerContent />} screenOptions={{headerShown: false}}>
-      <Drawer.Screen name='login' options={{headerShown: false}}/>
-    </Drawer>
+    <Drawer drawerContent={() => <DrawerContent />} screenOptions={{headerShown: false}} />
   );
 }

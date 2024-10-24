@@ -54,6 +54,7 @@ export interface Test extends BaseObject {
 }
 
 export interface Question extends BaseObject {
+    partNum: number;
     type: QuestionType;
     subQuestions: Question[];
     content: string;
