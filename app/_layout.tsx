@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'react-native';
+import { AuthProvider } from '@/context/AuthContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -25,7 +26,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <AuthProvider>
       <StatusBar barStyle="light-content" backgroundColor="#004B8D" />
       <Stack>
         <Stack.Screen name='index' options={{ headerShown: false }}/>
@@ -67,6 +68,6 @@ export default function RootLayout() {
         />
         <Stack.Screen name='(drawer)'  options={{ headerShown: false }}/>
       </Stack>
-    </>
+    </AuthProvider>
   );
 }

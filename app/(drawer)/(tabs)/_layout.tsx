@@ -2,10 +2,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import Header from "@/components/header/Header";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { DrawerToggleButton } from "@react-navigation/drawer";
 
 export default function TabsLayout() {
-
     return (
         <SafeAreaView className="flex-1">
             <Header />

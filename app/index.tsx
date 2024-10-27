@@ -1,18 +1,31 @@
 import Loader from "@/components/loader/Loader";
-import useAuth from "@/hooks/auth/useAuth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { isLoading } from "expo-font";
 import { Redirect } from "expo-router";
+import { useEffect, useState } from "react";
 
 export default function index() {
+
+    const [isFirstLoad, setIsFirstLoad] = useState(true)
+
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const checkFirstLoad = async() => {
+            const firstLoad = await AsyncStorage.getItem('firstLoad');
+            if(firstLoad === 'false') {
+                setIsFirstLoad(false)
+            }
+            setLoading(false)
+        }
+        checkFirstLoad()
+    }, [])
     
-    const { loading, user } = useAuth()
+    if(loading) return (
+        <Loader />
+    )
     
     return (
-        <>
-            {loading ? (
-                <Loader />
-            ) : (
-                <Redirect href={user ? "/(drawer)/" : "/welcome-intro"} />
-            )}
-        </>
+        <Redirect href={isFirstLoad ? "/welcome-intro" : "/(drawer)/"} />
     )
 }

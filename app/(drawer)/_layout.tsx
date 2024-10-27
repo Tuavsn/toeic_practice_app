@@ -8,7 +8,7 @@ import useAuth from '@/hooks/auth/useAuth';
 
 const DrawerContent = () => {
 
-  const { loading, user } = useAuth()
+  const { user, logout } = useAuth()
   
   return (
     <DrawerContentScrollView>
@@ -18,7 +18,7 @@ const DrawerContent = () => {
               <Image
                   width={70}
                   height={70}
-                  source={{uri: 'https://lh3.googleusercontent.com/a/ACg8ocIaWmYeQTzXapMs5L7_okIgL05hMYCAMdcITw1QW_k-uuVqsTfW=s432-c-no'}}
+                  source={{uri: user.avatar}}
               />
           ) : (
               <FontAwesome name="user-circle" size={60} color="#637794" />
@@ -27,7 +27,7 @@ const DrawerContent = () => {
         <View>
           <Text className="text-[#004B8D] font-bold text-lg">Xin chào</Text>
           {user && (
-            <Text className="font-bold text-xl">Học Tuấn</Text>
+            <Text className="font-bold">{user.email}</Text>
           )}
         </View>
       </View>
@@ -61,9 +61,7 @@ const DrawerContent = () => {
               { color: "white"},
             ]}
             style={{ backgroundColor: "#004B8D", elevation: 5}}
-            onPress={() => {
-              router.push("/login");
-            }}
+            onPress={() => logout()}
           />
         </>
       ) : (

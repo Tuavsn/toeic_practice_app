@@ -1,7 +1,7 @@
 export interface BaseObject {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
+    id?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export interface Role extends BaseObject {
@@ -10,10 +10,10 @@ export interface Role extends BaseObject {
 }
 
 export interface User extends BaseObject {
-    email: string;
-    avatar: string;
-    role: string;
-    target: number;
+    email?: string;
+    avatar?: string;
+    role?: string;
+    token?: string;
 }
 
 export interface Course extends BaseObject {
