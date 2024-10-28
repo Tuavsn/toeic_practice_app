@@ -60,7 +60,7 @@ export interface Question extends BaseObject {
     content: string;
     difficulty: Difficulty;
     topics: string[];
-    resouces: Resource[];
+    resources: Resource[];
     transcript: string;
     explanation: string;
     answers: string[];
@@ -85,13 +85,13 @@ export enum Difficulty {
 }
 
 export enum QuestionType {
-    SINGLE = "SINGLE",
-    GROUP = "GROUP",
-    SUBQUESTION = "SUBQUESTION"
+    SINGLE = "single",
+    GROUP = "group",
+    SUBQUESTION = "subquestion"
 }
 
 export enum ResourceType {
-    PARAGRAPH = "PARAGRAPH",
-    IMAGE = "IMAGE",
-    AUDIO = "AUDIO"
+    PARAGRAPH = "paragraph",
+    IMAGE = "image",
+    AUDIO = "audio"
 }

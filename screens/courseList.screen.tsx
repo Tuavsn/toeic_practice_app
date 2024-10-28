@@ -3,7 +3,7 @@ import { Question } from "@/types/global.type";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { Button, FlatList, Text, TouchableOpacity, View } from "react-native";
 import Collapsible from "react-native-collapsible";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -20,6 +20,8 @@ const DATA: Practice[] = [
     { id: '4', title: 'Part 4: Talks', exercises: [] },
 ];
 
+const ITEMS_PER_PAGE = 5;
+
 export default function CourseListScreen() {
     const [practices, setPractices] = useState<Practice[]>(DATA);
 
@@ -27,8 +29,18 @@ export default function CourseListScreen() {
 
     const [collapsed, setCollapsed] = useState<string | null>(null); // Trạng thái để kiểm soát dropdown
 
+    const [page, setPage] = useState<{ [key: string]: number }>({}); // Trạng thái phân trang cho mỗi mục
+
     const toggleCollapse = (id: string) => {
         setCollapsed(collapsed === id ? null : id); // Đổi trạng thái
+    };
+
+    const handlePress = (question: Question) => {
+        // Điều hướng đến TestDetail với params là question
+        router.push({
+          pathname: '/(main)/test',
+          params: { question: JSON.stringify(question) }, // Serialize question object
+        });
     };
 
     useEffect(() => {
@@ -55,6 +67,48 @@ export default function CourseListScreen() {
         fetchExercises();
     }, [])
 
+    const renderExercises = (exercises: Question[], practiceId: string) => {
+        const currentPage = page[practiceId] || 1;
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        const paginatedExercises = exercises.slice(start, end);
+
+        return (
+            <>
+                <FlatList
+                    data={paginatedExercises}
+                    renderItem={({ item, index }) => (
+                        <TouchableOpacity
+                            key={index}
+                            className="flex-row items-start justify-between mb-2 border border-gray-300 rounded-lg p-4"
+                            onPress={() => handlePress(item)}
+                        >
+                            <View className="ml-2">
+                                <Text className="text-gray-700 font-bold text-lg">Câu {index + 1 + start}</Text>
+                                <Text className="text-gray-600">Độ khó: {item.difficulty}</Text>
+                                <Text className="text-gray-600">Topic: {item.topics}</Text>
+                            </View>
+                            <FontAwesome5 name="headphones" size={25} color="#004B8D" />
+                        </TouchableOpacity>
+                    )}
+                    keyExtractor={(item, index) => `${practiceId}-${index}`}
+                />
+                <View className="flex-row justify-between mt-2">
+                    <Button
+                        title="Previous"
+                        onPress={() => setPage((prev) => ({ ...prev, [practiceId]: currentPage - 1 }))}
+                        disabled={currentPage === 1}
+                    />
+                    <Button
+                        title="Next"
+                        onPress={() => setPage((prev) => ({ ...prev, [practiceId]: currentPage + 1 }))}
+                        disabled={end >= exercises.length}
+                    />
+                </View>
+            </>
+        );
+    };
+
     const renderItem = ({ item } : { item: Practice }) => (
         <View className="mb-2">
             <TouchableOpacity
@@ -70,20 +124,7 @@ export default function CourseListScreen() {
             </TouchableOpacity>
             <Collapsible collapsed={collapsed !== item.id}>
                 <View className="p-4 bg-gray-50 border border-gray-300 rounded-b-lg">
-                    {item.exercises.map((exercise, index) => (
-                        <TouchableOpacity 
-                            key={index} 
-                            className="flex-row items-start justify-between mb-2 border border-gray-300 rounded-lg p-4"
-                            onPress={() => router.push({pathname: '/(main)/test' })}
-                        >
-                            <View className="ml-2">
-                                <Text className="text-gray-700 font-bold text-lg">Câu {index + 1}</Text>
-                                <Text className="text-gray-600">Độ khó: {exercise.difficulty}</Text>
-                                <Text className="text-gray-600">Topic: {exercise.topics}</Text>
-                            </View>
-                            <FontAwesome5 name="headphones" size={25} color="#004B8D" />
-                        </TouchableOpacity>
-                    ))}
+                    {renderExercises(item.exercises, item.id)}
                 </View>
             </Collapsible>
         </View>
