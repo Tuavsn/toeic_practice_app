@@ -1,3 +1,4 @@
+import useAuth from "@/hooks/auth/useAuth";
 import { getAllQuestions } from "@/services/question.service";
 import { Question } from "@/types/global.type";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
@@ -5,6 +6,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Button, FlatList, Text, TouchableOpacity, View } from "react-native";
 import Collapsible from "react-native-collapsible";
+import { ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface Practice {
@@ -23,6 +25,8 @@ const DATA: Practice[] = [
 const ITEMS_PER_PAGE = 5;
 
 export default function CourseListScreen() {
+    const {loading, toggleLoading} = useAuth()
+
     const [practices, setPractices] = useState<Practice[]>(DATA);
 
     const router = useRouter();
@@ -45,6 +49,7 @@ export default function CourseListScreen() {
 
     useEffect(() => {
         const fetchExercises = async () => {
+            toggleLoading()
             try {
                 // Tạo mảng các Promise từ DATA
                 const promises = DATA.map(async (practice) => {
@@ -61,6 +66,8 @@ export default function CourseListScreen() {
                 setPractices(updatedPractices);
             } catch (error) {
                 console.error('Error fetching exercises:', error);
+            } finally {
+                toggleLoading()
             }
         };
 
@@ -114,13 +121,17 @@ export default function CourseListScreen() {
             <TouchableOpacity
                 className="flex-row items-center justify-between p-4 border border-gray-300 rounded-lg bg-white"
                 onPress={() => toggleCollapse(item.id)}
-            >
+                >
                 <Text className="text-lg font-semibold text-gray-800">{item.title}</Text>
-                <Ionicons
-                    name={collapsed === item.id ? "chevron-up" : "chevron-down"}
-                    size={20}
-                    color="#004B8D"
-                />
+                {loading ? (
+                    <ActivityIndicator size="small" color="#004B8D" />
+                ) : (
+                    <Ionicons
+                        name={collapsed === item.id ? "chevron-up" : "chevron-down"}
+                        size={20}
+                        color="#004B8D"
+                    />
+                )}
             </TouchableOpacity>
             <Collapsible collapsed={collapsed !== item.id}>
                 <View className="p-4 bg-gray-50 border border-gray-300 rounded-b-lg">

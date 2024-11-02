@@ -81,7 +81,7 @@ const QuestionTypeSubquestion = ({ question }: { question: Question }) => {
 const RenderResource = ({ resource }: { resource: Resource }) => {
     switch (resource.type) {
         case ResourceType.IMAGE:
-            return <Image source={{ uri: resource.content }} style={{ width: '100%', height: 200, marginBottom: 16 }} />;
+            return <Image source={{ uri: resource.content }} style={{ width: '100%', height: 200, marginBottom: 16, objectFit: 'contain' }} />;
         case ResourceType.AUDIO:
             return (
                 <View className="py-4">
