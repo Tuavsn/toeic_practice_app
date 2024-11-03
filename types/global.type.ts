@@ -95,3 +95,10 @@ export enum ResourceType {
     IMAGE = "image",
     AUDIO = "audio"
 }
+
+export enum PracticeType {
+    LISTENING = "listening",
+    READING = "reading",
+    VOCABULRARY = "vocabulary",
+    GRAMMAR = "grammar"
+}

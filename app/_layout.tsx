@@ -52,6 +52,13 @@ export default function RootLayout() {
           headerTitleStyle: {fontWeight: 'bold'},
           headerTintColor: 'white'}}
         />
+        <Stack.Screen name='(main)/practice'  options={{
+          title: "Luyện tập",
+          headerTitleAlign: 'center',
+          headerStyle: {backgroundColor: '#004B8D'},
+          headerTitleStyle: {fontWeight: 'bold'},
+          headerTintColor: 'white'}}
+        />
         <Stack.Screen name='(main)/notify'  options={{
           title: "Thông báo",
           headerTitleAlign: 'center',

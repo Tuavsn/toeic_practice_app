@@ -46,7 +46,7 @@ const QuestionTypeSingle = ({ question }: { question: Question }) => {
                     {question.answers.map((answer, index) => (
                         <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
                             <RadioButton value={index.toString()} />
-                            <Text>{`${String.fromCharCode(65 + index)}. ${answer}`}</Text>
+                            <Text style={{ flexShrink: 1, flexWrap: 'wrap' }}>{`${String.fromCharCode(65 + index)}. ${answer}`}</Text>
                         </View>
                     ))}
                 </RadioButton.Group>
@@ -69,7 +69,7 @@ const QuestionTypeSubquestion = ({ question }: { question: Question }) => {
                     {question.answers.map((answer, index) => (
                         <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
                             <RadioButton value={index.toString()} />
-                            <Text>{`${String.fromCharCode(65 + index)}. ${answer}`}</Text>
+                            <Text style={{ flexShrink: 1, flexWrap: 'wrap' }}>{`${String.fromCharCode(65 + index)}. ${answer}`}</Text>
                         </View>
                     ))}
                 </RadioButton.Group>

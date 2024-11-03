@@ -1,13 +1,13 @@
+import PracticeListScreen from "@/screens/practiceList.screen";
 import QuestionDetailScreen from "@/screens/questionDetail.screen";
-import TestListScreen from "@/screens/testList.screen";
 import { useLocalSearchParams } from "expo-router";
 
-export default function Test() {
+export default function Practice() {
 
-    const { isList } = useLocalSearchParams();
+    const { type, isList } = useLocalSearchParams();
 
     if(isList) return (
-        <TestListScreen />
+        <PracticeListScreen type={type} />
     )
 
     return (

@@ -27,11 +27,11 @@ const DATA: Practice[] = [
 
 const ITEMS_PER_PAGE = 5;
 
-interface TestListScreenProps {
+interface PracticeListScreenProps {
     type: PracticeType;
 }
 
-export default function CourseListScreen({ type }: TestListScreenProps) {
+export default function PracticeListScreen({ type }: PracticeListScreenProps) {
 
     const router = useRouter();
 
@@ -48,9 +48,9 @@ export default function CourseListScreen({ type }: TestListScreenProps) {
     };
 
     const handlePress = (question: Question) => {
-        // Điều hướng đến TestDetail với params là question
+        // Điều hướng đến PracticeDetail với params là question
         router.push({
-          pathname: '/(main)/test',
+          pathname: '/(main)/practice',
           params: { question: JSON.stringify(question) }, // Serialize question object
         });
     };

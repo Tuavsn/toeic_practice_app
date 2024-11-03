@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Loader() {
     return (
         <SafeAreaView className="flex-1">
-            <View className="flex-1 items-center justify-center">
+            <View className="flex-1 items-center">
                 <Image
                     className="w-[300px]"
                     source={require('@/assets/images/Login-logo.png')}

@@ -1,17 +1,7 @@
 import { API_ENDPOINTS } from "@/constants/api"
 
-interface FilterParams {
-    pageSize?: string;
-    difficulty?: string;
-    partNum?: string;
-    topic?: string;
-    orderAscBy?: string;
-    orderDescBy?: string;
-}
-
-export const getAllQuestions = async (filterParams: FilterParams) => {
-    const queryString = new URLSearchParams(filterParams as Record<string, string>).toString();
-    const url = queryString ? `${API_ENDPOINTS.QUESTIONS}?${queryString}` : API_ENDPOINTS.QUESTIONS;
+export const getAllTests = async () => {
+    const url = API_ENDPOINTS.TESTS;
     try {
         const response = await fetch(url, {
             method: 'GET',
