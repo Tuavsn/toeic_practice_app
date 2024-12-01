@@ -6,11 +6,11 @@ import { Image, Text, TouchableOpacity, View } from "react-native";
 
 export default function Header() {
 
-    const router = useRouter()
-
     const navigation = useNavigation();
 
     const { user } = useAuth()
+
+    // console.log(user?.token)
 
     return (
         <View className="flex flex-row items-center justify-between p-3 bg-[#004B8D]">
@@ -34,14 +34,14 @@ export default function Header() {
                     )}
                 </View>
             </TouchableOpacity>
-            <View>
+            {/* <View>
                 <TouchableOpacity
                     className="mx-2 rounded-full bg-[#004B8D] px-3 py-2.5"
                     onPress={() => router.push('/(main)/notify')}
                 >
                     <Fontisto name="bell" size={32} color="white" />
                 </TouchableOpacity>
-            </View>
+            </View> */}
         </View>
     )
 }

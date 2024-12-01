@@ -16,22 +16,20 @@ export interface User extends BaseObject {
     token?: string;
 }
 
-export interface Course extends BaseObject {
+export interface Lecture extends BaseObject {
     name: string;
-    topic: string[];
-    format: string;
-    difficulty: Difficulty;
-    lectures: Lecture[];
-    assigments: Assignment[];
+    content: string;
+    topic: Topic[];
+    practiceQuestions: Question[];
 }
 
-export interface Lecture extends BaseObject {
+export interface Lecture {
     title: string;
     content: string;
     description: string;
 }
 
-export interface Assignment extends BaseObject {
+export interface Assignment {
     require: number;
     totalQuestion: number;
     questionIds: string[];
@@ -41,6 +39,12 @@ export interface Category extends BaseObject {
     format: string;
     year: number;
     tests: Test[];
+}
+
+export interface Topic extends BaseObject {
+    name: string;
+	solution: string;
+	overallSkill: string;
 }
 
 export interface Test extends BaseObject {
@@ -54,12 +58,60 @@ export interface Test extends BaseObject {
 }
 
 export interface Question extends BaseObject {
+    questionNum: number;
     partNum: number;
     type: QuestionType;
     subQuestions: Question[];
     content: string;
     difficulty: Difficulty;
-    topics: string[];
+    topic: Topic[];
+    resources: Resource[];
+    transcript: string;
+    explanation: string;
+    answers: string[];
+    correctAnswer: string;
+}
+
+export interface AnswerPair extends BaseObject {
+    questionId: string;
+    userAnswer: string;
+    timeSpent: number;
+}
+
+export interface SubmitRequest extends BaseObject {
+    userAnswer: AnswerPair[] | AnswerPair;
+	totalSeconds: number;
+	testId: string;
+	parts: string;
+	type: string;
+}
+
+export interface Result extends BaseObject {
+    testId: string;
+    totalTime: number;
+    totalReadingScore: number;
+    totalListeningScore: number;
+    totalCorrectAnswer: number;
+    totalIncorrectAnswer: number;
+    totalSkipAnswer: number;
+    type: string;  // practice or fulltest
+    parts: string;  // Practice parts
+    userAnswers: UserAnswer[];
+}
+
+export interface UserAnswer extends BaseObject {
+    questionId: string;
+    listTopics: Topic[];
+    userAnswer: string;
+    solution: string;
+    correct: boolean;
+    timeSpent: number;
+    questionNum: number;
+    partNum: number;
+    type: QuestionType;
+    subUserAnswer: UserAnswer[];
+    content: string;
+    difficulty: Difficulty;
     resources: Resource[];
     transcript: string;
     explanation: string;

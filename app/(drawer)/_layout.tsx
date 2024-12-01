@@ -45,7 +45,7 @@ const DrawerContent = () => {
             labelStyle={{color: "white"}}
             style={{ backgroundColor: "#004B8D", elevation: 5}}
             onPress={() => {
-              router.push("/profile");
+              router.push("/(auth)/profile");
             }}
           />
           <DrawerItem

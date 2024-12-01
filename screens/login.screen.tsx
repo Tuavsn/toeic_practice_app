@@ -20,7 +20,7 @@ export default function LoginScreen() {
             setShowWebView(false)
             const url = new URL(event.url);
             const token = url.searchParams.get('token');
-            const id = url.searchParams.get('id');
+            const id = url.searchParams.get('iduser');
             const email = url.searchParams.get('email');
             const avatar = url.searchParams.get('avatar');
             const role = url.searchParams.get('role');
@@ -68,7 +68,9 @@ export default function LoginScreen() {
                             <WebView
                                 source={{ uri: OAUTH2_URL }}
                                 onNavigationStateChange={handleWebViewNavigationStateChange}
-                                startInLoadingState
+                                startInLoadingState={true}
+                                javaScriptEnabled={true}
+                                javaScriptCanOpenWindowsAutomatically={true}
                                 userAgent={Platform.OS === 'android' ? 'Chrome/18.0.1025.133 Mobile Safari/535.19' : 'AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75'}
                                 style={{ flex: 1 }}
                             />

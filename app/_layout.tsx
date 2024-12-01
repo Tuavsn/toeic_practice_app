@@ -30,8 +30,15 @@ export default function RootLayout() {
       <StatusBar barStyle="light-content" backgroundColor="#004B8D" />
       <Stack>
         <Stack.Screen name='index' options={{ headerShown: false }}/>
-        <Stack.Screen name='welcome-intro'  options={{ headerShown: false }}/>
-        <Stack.Screen name='(main)/course'  options={{
+        <Stack.Screen name='welcome-intro' options={{ headerShown: false }}/>
+        <Stack.Screen name='(auth)/profile' options={{
+          title: "Profile",
+          headerTitleAlign: 'center',
+          headerStyle: {backgroundColor: '#004B8D'},
+          headerTitleStyle: {fontWeight: 'bold'},
+          headerTintColor: 'white'}}
+        />
+        <Stack.Screen name='(main)/course' options={{
           title: "Khoá học",
           headerTitleAlign: 'center',
           headerStyle: {backgroundColor: '#004B8D'},
@@ -54,6 +61,13 @@ export default function RootLayout() {
         />
         <Stack.Screen name='(main)/practice'  options={{
           title: "Luyện tập",
+          headerTitleAlign: 'center',
+          headerStyle: {backgroundColor: '#004B8D'},
+          headerTitleStyle: {fontWeight: 'bold'},
+          headerTintColor: 'white'}}
+        />
+        <Stack.Screen name='(main)/result'  options={{
+          title: "Kết quả",
           headerTitleAlign: 'center',
           headerStyle: {backgroundColor: '#004B8D'},
           headerTitleStyle: {fontWeight: 'bold'},

@@ -1,173 +1,92 @@
-import Loader from "@/components/loader/Loader";
-import useAuth from "@/hooks/auth/useAuth";
-import { getAllQuestions } from "@/services/question.service";
-import { PracticeType, Question } from "@/types/global.type";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Button, FlatList, Text, TouchableOpacity, View } from "react-native";
-import Collapsible from "react-native-collapsible";
-import { SafeAreaView } from "react-native-safe-area-context";
+import Loader from '@/components/loader/Loader';
+import useAuth from '@/hooks/auth/useAuth';
+import { getAllLectures } from '@/services/lecture.service';
+import { Lecture } from '@/types/global.type';
+import { AntDesign } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-interface Practice {
-    id: string;
-    title: string;
-    exercises: Question[];
-}
+const CourseListScreen = () => {
 
-const DATA: Practice[] = [
-    { id: '1', title: 'Part 1: Photographs', exercises: [] },
-    { id: '2', title: 'Part 2: Question-Response', exercises: [] },
-    { id: '3', title: 'Part 3: Short Conversations', exercises: [] },
-    { id: '4', title: 'Part 4: Talks', exercises: [] },
-    { id: '5', title: 'Part 5: Incomplete Sentences', exercises: [] },
-    { id: '6', title: 'Part 6: Text Completion', exercises: [] },
-    { id: '7', title: 'Part 7: Reading Comprehension', exercises: [] },
-];
+    const {loading, toggleLoading} = useAuth();
 
-const ITEMS_PER_PAGE = 5;
+    const [lectures, setLectures] = useState<Lecture[]>([])
 
-interface TestListScreenProps {
-    type: PracticeType;
-}
-
-export default function CourseListScreen({ type }: TestListScreenProps) {
-
-    const router = useRouter();
-
-    const {loading, toggleLoading} = useAuth()
-
-    const [practices, setPractices] = useState<Practice[]>([]);
-
-    const [collapsed, setCollapsed] = useState<string | null>(null); // Trạng thái để kiểm soát dropdown
-
-    const [page, setPage] = useState<{ [key: string]: number }>({}); // Trạng thái phân trang cho mỗi mục
-
-    const toggleCollapse = (id: string) => {
-        setCollapsed(collapsed === id ? null : id); // Đổi trạng thái
-    };
-
-    const handlePress = (question: Question) => {
-        // Điều hướng đến TestDetail với params là question
+    const handlePress = (lectureId: string) => {
         router.push({
-          pathname: '/(main)/test',
-          params: { question: JSON.stringify(question) }, // Serialize question object
+            pathname: '/(main)/lecture',
+            params: { lectureId: lectureId },
         });
     };
 
     useEffect(() => {
-        const fetchExercises = async () => {
+        const fetchLectures = async() => {
             toggleLoading()
             try {
-                let filteredData = [];
-                switch (type) {
-                    case PracticeType.LISTENING:
-                        filteredData = DATA.filter(practice => parseInt(practice.id) >= 1 && parseInt(practice.id) <= 4);
-                        break;
-                    case PracticeType.READING:
-                        filteredData = DATA.filter(practice => parseInt(practice.id) >= 5 && parseInt(practice.id) <= 7);
-                        break;
-                    default:
-                        filteredData = DATA;
-                        break;
-                }
-                const promises = filteredData.map(async (practice) => {
-                    const response = await getAllQuestions({ pageSize: '1000', partNum: practice.id});
-                    const data = await response.json(); // Giả sử response có định dạng JSON
-                    return {
-                        ...practice,
-                        exercises: data.data.result, // Cập nhật mảng exercises với dữ liệu trả về
-                    };
-                });
-                // Chờ tất cả Promise hoàn thành và cập nhật practices
-                const updatedPractices = await Promise.all(promises);
-                setPractices(updatedPractices);
+                const response = await getAllLectures({ pageSize: '1000', info: true })
+                const data = await response.json();
+                setLectures(data.data.result)
             } catch (error) {
-                console.error('Error fetching exercises:', error);
+                console.error('Error fetching lectures:', error);
             } finally {
                 toggleLoading()
             }
-        };
-        fetchExercises();
+        }
+        fetchLectures()
     }, [])
 
-    const renderExercises = (exercises: Question[], practiceId: string) => {
-        const currentPage = page[practiceId] || 1;
-        const start = (currentPage - 1) * ITEMS_PER_PAGE;
-        const end = start + ITEMS_PER_PAGE;
-        const paginatedExercises = exercises.slice(start, end);
+    const renderCourseItem = ({ item }: { item: Lecture }) => {
+        const maxTopicsToShow = 4;
+        const visibleTopics = item.topic.slice(0, maxTopicsToShow);
+        const hasMore = item.topic.length > maxTopicsToShow;
 
         return (
-            <>
-                <FlatList
-                    data={paginatedExercises}
-                    renderItem={({ item, index }) => (
-                        <TouchableOpacity
-                            key={index}
-                            className="flex-row items-start justify-between mb-2 border border-gray-300 rounded-lg p-4"
-                            onPress={() => handlePress(item)}
-                        >
-                            <View className="ml-2">
-                                <Text className="text-gray-700 font-bold text-lg">Câu {index + 1 + start}</Text>
-                                <Text className="text-gray-600">Độ khó: {item.difficulty}</Text>
-                                <Text className="text-gray-600">Topic: {item.topics}</Text>
-                            </View>
-                            <FontAwesome5 name="headphones" size={25} color="#004B8D" />
-                        </TouchableOpacity>
-                    )}
-                    keyExtractor={(item, index) => `${practiceId}-${index}`}
-                />
-                <View className="flex-row justify-between mt-2">
-                    <Button
-                        title="Previous"
-                        onPress={() => setPage((prev) => ({ ...prev, [practiceId]: currentPage - 1 }))}
-                        disabled={currentPage === 1}
-                    />
-                    <Button
-                        title="Next"
-                        onPress={() => setPage((prev) => ({ ...prev, [practiceId]: currentPage + 1 }))}
-                        disabled={end >= exercises.length}
-                    />
+            <TouchableOpacity
+                className="mb-3 p-4 border border-gray-300 rounded-lg bg-white"
+                style={{shadowColor: "#171717" ,elevation: 2}}
+                onPress={() => handlePress(item.id as string)}
+            >
+                <View className='flex-row items-start justify-between'>
+                    <Text className="text-xl font-semibold text-gray-800 mb-3">{item.name}</Text>
+                    <AntDesign name="rightcircleo" size={20} color="#004B8D" />
                 </View>
-            </>
+                <View className="flex-row flex-wrap">
+                    {visibleTopics.map((topic: any, index: number) => (
+                        <View
+                            key={index}
+                            className="bg-[#004B8D] text-white py-1 px-2 rounded-full mr-2 mb-1"
+                        >
+                            <Text className="text-white text-sm">{topic.name}</Text>
+                        </View>
+                    ))}
+                    {hasMore && (
+                        <View className="bg-gray-300 text-gray-700 py-1 px-2 rounded-full mb-1">
+                            <Text className="text-gray-700">...</Text>
+                        </View>
+                    )}
+                </View>
+            </TouchableOpacity>
         );
     };
 
-    const renderItem = ({ item } : { item: Practice }) => (
-        <View className="mb-2">
-            <TouchableOpacity
-                className="flex-row items-center justify-between p-4 border border-gray-300 rounded-lg bg-white"
-                onPress={() => toggleCollapse(item.id)}
-                >
-                <Text className="text-lg font-semibold text-gray-800">{item.title}</Text>
-                <Ionicons
-                    name={collapsed === item.id ? "chevron-up" : "chevron-down"}
-                    size={20}
-                    color="#004B8D"
-                />
-            </TouchableOpacity>
-            <Collapsible collapsed={collapsed !== item.id}>
-                <View className="p-4 bg-gray-50 border border-gray-300 rounded-b-lg">
-                    {renderExercises(item.exercises, item.id)}
-                </View>
-            </Collapsible>
-        </View>
-    );
-
     return (
-        <SafeAreaView className="flex-1 bg-gray-100">
+        <SafeAreaView className="flex-1 p-4">
             {
                 loading ? (
-                    <Loader />
+                    <Loader loadingText='Đang tải tài liệu' />
                 ) : (
                     <FlatList
-                        data={practices}
-                        renderItem={renderItem}
-                        keyExtractor={item => item.id}
-                        contentContainerStyle={{ padding: 16 }}
+                        data={lectures}
+                        renderItem={renderCourseItem}
+                        keyExtractor={item => item.id as string}
+                        showsVerticalScrollIndicator={false}
                     />
                 )
             }
         </SafeAreaView>
-    )
-}
+    );
+};
+
+export default CourseListScreen;

@@ -1,4 +1,4 @@
-import QuestionDetailScreen from "@/screens/questionDetail.screen";
+import TestDetailScreen from "@/screens/testDetail.screen";
 import TestListScreen from "@/screens/testList.screen";
 import { useLocalSearchParams } from "expo-router";
 
@@ -11,6 +11,6 @@ export default function Test() {
     )
 
     return (
-        <QuestionDetailScreen />  
+        <TestDetailScreen />  
     )
 }
