@@ -4,14 +4,29 @@ import Loader from "@/components/loader/Loader";
 import DiscoverStudyPath from "@/components/studypath/DiscoverStudyPath";
 import UserHistory from "@/components/user_history/UserHistory";
 import useAuth from "@/hooks/auth/useAuth";
-import { ScrollView, Text, View } from "react-native";
+import React from "react";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 
 export default function HomeScreen() {
 
     const {user, loading} = useAuth();
 
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+          setRefreshing(false);
+        }, 2000);
+      }, []);
+
+
     return (
-        <ScrollView className="px-4 mt-4">
+        <ScrollView className="px-4 mt-4"
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+        >
             <View>
                 <Text>
                     <Text className="text-3xl font-bold text-[#004B8D]">Toiec</Text>

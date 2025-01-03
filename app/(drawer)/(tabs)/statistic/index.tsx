@@ -1,12 +1,10 @@
-import { Text, View } from "react-native"
+import StatScreen from "@/screens/userStat.screen"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 export default function StatisticTabItem() {
     return (
-        <SafeAreaView>
-            <View>
-                <Text>Statistic</Text>
-            </View>
+        <SafeAreaView className="flex-1">
+            <StatScreen />
         </SafeAreaView>
     )
 }

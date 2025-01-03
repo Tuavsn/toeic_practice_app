@@ -3,7 +3,7 @@ import { router, useNavigation } from 'expo-router';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Drawer } from "expo-router/drawer";
 import { Image, Text, View } from 'react-native';
-import { AntDesign, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import useAuth from '@/hooks/auth/useAuth';
 
 const DrawerContent = () => {

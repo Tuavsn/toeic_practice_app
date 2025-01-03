@@ -9,7 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function QuestionDetailScreen() {
 
-  const { toggleLoading } = useAuth();
+  const { user, toggleLoading } = useAuth();
 
   const { question, questNum } = useLocalSearchParams();
 
@@ -52,7 +52,7 @@ export default function QuestionDetailScreen() {
             },
           ];
 
-      await submitTest({
+      user && await submitTest({
         userAnswer: answers,
         testId: "",
         totalSeconds: 0,
@@ -85,8 +85,7 @@ export default function QuestionDetailScreen() {
             explanation: parsedQuestion.explanation || "No explanation provided.",
           },
         ];
-
-    setResultDetails(newResultDetails);
+      setResultDetails(newResultDetails);
     } catch (error) {
       console.error("Submit error:", error);
     } finally {

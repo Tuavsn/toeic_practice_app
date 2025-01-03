@@ -52,6 +52,7 @@ export default function TestListScreen() {
                     categoriesData.data.result.map(async (category: Category) => {
                         const testsResponse = await getAllTestsByCategory(category.id);
                         const testsData = await testsResponse.json();
+                        console.log(testsData)
                         return {
                             ...category,
                             tests: testsData.data.result,
@@ -60,7 +61,7 @@ export default function TestListScreen() {
                 );
                 setCategories(categoriesWithTests);
             } catch (error) {
-                console.error('Error fetching exercises:', error);
+                console.error('Error fetching tests:', error);
             } finally {
                 toggleLoading()
             }
@@ -77,7 +78,7 @@ export default function TestListScreen() {
             const userTestIdsSet = new Set<string>(userAnswersData.data.result.map((result: Result) => result.testId));
             setUserTestIds(userTestIdsSet);
         } catch (error) {
-            console.error('Error fetching exercises:', error);
+            console.error('Error fetching results:', error);
         } finally {
             toggleLoading()
         }

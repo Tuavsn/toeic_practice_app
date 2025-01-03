@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Question, QuestionType, Resource, ResourceType, UserAnswer } from "@/types/global.type";
 import { Button, Image, Text, View } from "react-native";
 import { RadioButton } from 'react-native-paper'; // Nhập RadioButton từ react-native-paper
 import { Audio } from 'expo-av'; // Thư viện để phát âm thanh
 import { Ionicons } from "@expo/vector-icons";
+import { useAudioManager } from "@/context/AudioContext";
+import { useFocusEffect } from "expo-router";
 
 interface QuestionDisplayProps {
     question: Question | UserAnswer;
@@ -13,6 +15,17 @@ interface QuestionDisplayProps {
 }
 
 const QuestionDisplay = ({ question, displayQuestNum, onAnswerSelect, disableSelect }: QuestionDisplayProps) => {
+    const { stopCurrentAudio } = useAudioManager();
+
+    useFocusEffect(
+        React.useCallback(() => {
+          return () => {
+            // Dừng âm thanh khi màn hình mất focus
+            stopCurrentAudio();
+          };
+        }, [stopCurrentAudio])
+    );
+
     switch (question.type) {
         case QuestionType.GROUP:
             return <QuestionTypeGroup
@@ -201,6 +214,8 @@ const QuestionTypeSubquestion = ({ question, displayQuestNum, onAnswerSelect, di
 };
 
 const RenderResource = ({ resource }: { resource: Resource }) => {
+    const { playAudio } = useAudioManager();
+
     switch (resource.type) {
         case ResourceType.IMAGE:
             return <Image source={{ uri: resource.content }} style={{ width: '100%', height: 200, marginBottom: 16, objectFit: 'contain' }} />;
@@ -219,12 +234,6 @@ const RenderResource = ({ resource }: { resource: Resource }) => {
         default:
             return null;
     }
-};
-
-// Hàm phát âm thanh
-const playAudio = async (uri: string) => {
-    const { sound } = await Audio.Sound.createAsync({ uri });
-    await sound.playAsync();
 };
 
 export default QuestionDisplay;

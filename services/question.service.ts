@@ -2,6 +2,7 @@ import { API_ENDPOINTS } from "@/constants/api"
 
 interface FilterParams {
     pageSize?: string;
+    current?: string;
     difficulty?: string;
     partNum?: string;
     topic?: string;

@@ -9,6 +9,7 @@ import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Button, FlatList, Text, TouchableOpacity, View } from "react-native";
 import Collapsible from "react-native-collapsible";
+import { ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface Practice {
@@ -27,8 +28,6 @@ const DATA: Practice[] = [
     { id: '7', title: 'Part 7: Reading Comprehension', exercises: [] },
 ];
 
-const ITEMS_PER_PAGE = 5;
-
 interface PracticeListScreenProps {
     type: PracticeType;
 }
@@ -41,17 +40,17 @@ export default function PracticeListScreen({ type }: PracticeListScreenProps) {
 
     const {loading, toggleLoading} = useAuth();
 
+    const [collapseLoading, setCollapseLoading] = useState<{ [key: string]: boolean }>({});
+
     const [practices, setPractices] = useState<Practice[]>([]);
 
     const [collapsed, setCollapsed] = useState<string | null>(null); // Trạng thái để kiểm soát dropdown
 
     const [page, setPage] = useState<{ [key: string]: number }>({}); // Trạng thái phân trang cho mỗi mục
 
-    const [userAnswerIds, setUserAnswerIds] = useState<Set<string>>(new Set());
+    const [pageSize, setPageSize] = useState(5);
 
-    const toggleCollapse = (id: string) => {
-        setCollapsed(collapsed === id ? null : id); // Đổi trạng thái
-    };
+    const [userAnswerIds, setUserAnswerIds] = useState<Set<string>>(new Set());
 
     const handlePress = async (question: Question, questNum: number) => {
         // Điều hướng đến PracticeDetail với params là question
@@ -61,41 +60,57 @@ export default function PracticeListScreen({ type }: PracticeListScreenProps) {
         });
     };
 
-    useEffect(() => {
-        const fetchExercises = async () => {
-            toggleLoading()
+    const fetchQuestions = async (practiceId: string) => {
+        const selectedPractice = practices.find((practice) => practice.id === practiceId);
+        const currentPage = page[practiceId] || 1;
+
+        if (selectedPractice) {
             try {
-                let filteredData = [];
-                switch (type) {
-                    case PracticeType.LISTENING:
-                        filteredData = DATA.filter(practice => parseInt(practice.id) >= 1 && parseInt(practice.id) <= 4);
-                        break;
-                    case PracticeType.READING:
-                        filteredData = DATA.filter(practice => parseInt(practice.id) >= 5 && parseInt(practice.id) <= 7);
-                        break;
-                    default:
-                        filteredData = DATA;
-                        break;
-                }
-                const promises = filteredData.map(async (practice) => {
-                    const response = await getAllQuestions({ pageSize: '1000', partNum: practice.id});
-                    const data = await response.json(); // Giả sử response có định dạng JSON
-                    return {
-                        ...practice,
-                        exercises: data.data.result, // Cập nhật mảng exercises với dữ liệu trả về
-                    };
+                setCollapseLoading((prev) => ({ ...prev, [practiceId]: true }));
+                const response = await getAllQuestions({
+                    pageSize: pageSize.toString(),
+                    partNum: practiceId,
+                    current: currentPage.toString(),
                 });
-                // Chờ tất cả Promise hoàn thành và cập nhật practices
-                const updatedPractices = await Promise.all(promises);
-                setPractices(updatedPractices);
+                const data = await response.json();
+                setPractices((prevPractices) =>
+                    prevPractices.map((practice) =>
+                        practice.id === practiceId
+                            ? { ...practice, exercises: data.data.result }
+                            : practice
+                    )
+                );
             } catch (error) {
-                console.error('Error fetching exercises:', error);
+                console.error("Error fetching questions:", error);
             } finally {
-                toggleLoading();
+                setCollapseLoading((prev) => ({ ...prev, [practiceId]: false }));
             }
+        }
+    };
+
+    const toggleCollapse = (id: string) => {
+        const isCollapsed = collapsed === id;
+        setCollapsed(isCollapsed ? null : id); // Toggle trạng thái collapse
+        if (!isCollapsed) {
+            setPage((prev) => ({ ...prev, [id]: 1 })); // Reset currentPage về 1
+            fetchQuestions(id); // Fetch dữ liệu cho collapse vừa mở
+        }
+    };
+
+    useEffect(() => {
+        const prepareData = async () => {
+            let filteredData: Practice[] = [];
+            if (type === PracticeType.LISTENING) {
+                filteredData = DATA.filter((practice) => parseInt(practice.id) >= 1 && parseInt(practice.id) <= 4);
+            } else if (type === PracticeType.READING) {
+                filteredData = DATA.filter((practice) => parseInt(practice.id) >= 5 && parseInt(practice.id) <= 7);
+            }
+            setPractices(filteredData);
         };
-        fetchExercises();
-    }, [])
+    
+        prepareData();
+        setCollapsed(null);
+    }, [type]);
 
     const fetchUserResults = async () => {
         toggleLoading()
@@ -105,7 +120,7 @@ export default function PracticeListScreen({ type }: PracticeListScreenProps) {
             const userAnswerIdsSet = new Set<string>(userAnswersData.data.result.map((result: Result) => result.userAnswers[0].questionId));
             setUserAnswerIds(userAnswerIdsSet);
         } catch (error) {
-            console.error('Error fetching exercises:', error);
+            console.error('Error fetching result:', error);
         } finally {
             toggleLoading()
         }
@@ -120,14 +135,13 @@ export default function PracticeListScreen({ type }: PracticeListScreenProps) {
 
     const renderExercises = (exercises: Question[], practiceId: string) => {
         const currentPage = page[practiceId] || 1;
-        const start = (currentPage - 1) * ITEMS_PER_PAGE;
-        const end = start + ITEMS_PER_PAGE;
-        const paginatedExercises = exercises.slice(start, end);
+
+        if(collapseLoading[practiceId]) return <Text>Đang tải...</Text>;
 
         return (
             <>
                 <FlatList
-                    data={paginatedExercises}
+                    data={exercises}
                     renderItem={({ item, index }) => (
                         <TouchableOpacity
                             key={index}
@@ -136,7 +150,9 @@ export default function PracticeListScreen({ type }: PracticeListScreenProps) {
                         >
                             <View className="ml-2">
                                 <View className="flex-row items-center">
-                                    <Text className="text-gray-700 font-bold text-lg">Câu {index + 1 + start}</Text>
+                                <Text className="text-gray-700 font-bold text-lg">
+                                    Câu {(currentPage - 1) * pageSize + index + 1}
+                                </Text>
                                     {(userAnswerIds.has(item.id as string) ||
                                         (item.subQuestions &&
                                             item.subQuestions.some(subQuestion => userAnswerIds.has(subQuestion.id as string)))
@@ -145,7 +161,7 @@ export default function PracticeListScreen({ type }: PracticeListScreenProps) {
                                     )}
                                 </View>
                                 <Text className="text-gray-600">Độ khó: {item.difficulty}</Text>
-                                <Text className="text-gray-600">Topic: {item.topics}</Text>
+                                {/* <Text className="text-gray-600">Topic: {item.topic}</Text> */}
                             </View>
                             <FontAwesome5 name={type === PracticeType.LISTENING ? "headphones" : "book-reader"} size={25} color="#004B8D" />
                         </TouchableOpacity>
@@ -156,14 +172,20 @@ export default function PracticeListScreen({ type }: PracticeListScreenProps) {
                     <Button
                         color={"#004B8D"}
                         title="Previous"
-                        onPress={() => setPage((prev) => ({ ...prev, [practiceId]: currentPage - 1 }))}
+                        onPress={() => {
+                            setPage((prev) => ({ ...prev, [practiceId]: currentPage - 1 }));
+                            fetchQuestions(practiceId);
+                        }}
                         disabled={currentPage === 1}
                     />
                     <Button
                         color={"#004B8D"}
                         title="Next"
-                        onPress={() => setPage((prev) => ({ ...prev, [practiceId]: currentPage + 1 }))}
-                        disabled={end >= exercises.length}
+                        onPress={() => {
+                            setPage((prev) => ({ ...prev, [practiceId]: currentPage + 1 }));
+                            fetchQuestions(practiceId);
+                        }}
+                        disabled={exercises.length < pageSize}
                     />
                 </View>
             </>
@@ -178,11 +200,15 @@ export default function PracticeListScreen({ type }: PracticeListScreenProps) {
                 onPress={() => toggleCollapse(item.id)}
                 >
                 <Text className="text-lg font-semibold text-gray-800">{item.title}</Text>
-                <Ionicons
-                    name={collapsed === item.id ? "chevron-up" : "chevron-down"}
-                    size={20}
-                    color="#004B8D"
-                />
+                {collapseLoading[item.id] ? (
+                    <ActivityIndicator size="small" color="#004B8D" />
+                ) : (
+                    <Ionicons
+                        name={collapsed === item.id ? "chevron-up" : "chevron-down"}
+                        size={20}
+                        color="#004B8D"
+                    />
+                )}
             </TouchableOpacity>
             <Collapsible collapsed={collapsed !== item.id}>
                 <View className="p-4 bg-gray-50 border border-gray-300 rounded-b-lg">

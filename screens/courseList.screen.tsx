@@ -25,7 +25,7 @@ const CourseListScreen = () => {
         const fetchLectures = async() => {
             toggleLoading()
             try {
-                const response = await getAllLectures({ pageSize: '1000', info: true })
+                const response = await getAllLectures({ pageSize: '1000', info: true, active: true })
                 const data = await response.json();
                 setLectures(data.data.result)
             } catch (error) {

@@ -7,7 +7,7 @@ import { Text, View, Button, TouchableOpacity } from "react-native";
 import ProgressBar from "./ProgressBar";
 import { useRouter } from "expo-router";
 
-const ITEMS_PER_PAGE = 5; // Number of items per page
+const ITEMS_PER_PAGE = 10; // Number of items per page
 
 export default function UserHistory() {
 
@@ -147,20 +147,6 @@ export default function UserHistory() {
                                         </View>
                                     </TouchableOpacity>
                                 ))}
-
-                                {/* Pagination controls for the current testId */}
-                                <View className="flex-row justify-between items-center mt-4">
-                                    <Button
-                                        title="Trước"
-                                        onPress={() => changePage(testId, "prev")}
-                                        disabled={currentPages[testId] === 1}
-                                    />
-                                    <Button
-                                        title="Sau"
-                                        onPress={() => changePage(testId, "next")}
-                                        disabled={currentPages[testId] * ITEMS_PER_PAGE >= groupedResult.length}
-                                    />
-                                </View>
                             </View>
                         )}
                     </View>

@@ -89,10 +89,10 @@ export default function LectureScreen() {
                         </View>
 
                         {/* Danh sách câu ôn tập */}
-                        <View className="mb-6">
+                        {/* <View className="mb-6">
                             <Text className="text-xl font-bold text-gray-800 mb-4">Câu hỏi ôn tập</Text>
                             {renderPracticeQuestions()}
-                        </View>
+                        </View> */}
                     </ScrollView>
                 )
             }
