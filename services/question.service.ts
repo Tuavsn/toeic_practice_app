@@ -1,32 +1,61 @@
-import { API_ENDPOINTS } from "@/constants/api"
+import { API_ENDPOINTS } from "@/constants/api";
+import { ApiResponse, PaginationMeta, Question } from "@/types/global.type";
+import ApiHandler from "@/utils/ApiHandler";
+import Logger from "@/utils/Logger";
 
+/**
+ * Parameters to filter and paginate questions
+ */
 interface FilterParams {
-    pageSize?: string;
-    current?: string;
-    difficulty?: string;
-    partNum?: string;
-    topic?: string;
-    orderAscBy?: string;
-    orderDescBy?: string;
+  current?: number;
+  pageSize?: number;
+  difficulty?: string;
+  partNum?: string;
+  topic?: string;
+  orderAscBy?: string;
+  orderDescBy?: string;
 }
 
-export const getAllQuestions = async (filterParams: FilterParams) => {
-    const queryString = new URLSearchParams(filterParams as Record<string, string>).toString();
-    const url = queryString ? `${API_ENDPOINTS.QUESTIONS}?${queryString}` : API_ENDPOINTS.QUESTIONS;
+/**
+ * Service for handling question-related API operations
+ */
+class QuestionService {
+  /**
+   * Fetch questions with optional filtering and pagination
+   * @param filterParams Filtering and pagination options
+   */
+  async getAllQuestions(
+    filterParams: FilterParams = {}
+  ): Promise<ApiResponse<Question[]>> {
+    Logger.info("Fetching all questions with filters", filterParams);
+
     try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors'
-        })
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+      // Build query params
+      const params: Record<string, any> = {};
+      Object.entries(filterParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params[key] = value;
         }
-        return response;
+      });
+      // Defaults
+      if (!params.page) params.page = 1;
+      if (!params.pageSize) params.pageSize = 999;
+
+      const response = await ApiHandler.Get<Question[]>(
+        API_ENDPOINTS.QUESTIONS,
+        params
+      );
+
+      Logger.debug(
+        `Fetched questions: success=${response.success}, count=${response.data?.length || 0}`
+      );
+
+      return response;
     } catch (error) {
-        console.error('Error fetching questions:', error);
-        throw error; // Có thể xử lý lỗi theo cách bạn muốn
+      Logger.error('Error in getAllQuestions:', error);
+      throw error;
     }
+  }
 }
+
+export default new QuestionService();

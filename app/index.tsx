@@ -1,6 +1,5 @@
-import Loader from "@/components/loader/Loader";
+import Loader from "@/components/Loader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { isLoading } from "expo-font";
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 

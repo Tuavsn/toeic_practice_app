@@ -1,6 +1,7 @@
-import Loader from '@/components/loader/Loader';
+import { BadgeList } from '@/components/common/badge/BadgeList';
+import Loader from '@/components/Loader';
 import useAuth from '@/hooks/auth/useAuth';
-import { getAllLectures } from '@/services/lecture.service';
+import LectureService from '@/services/lecture.service';
 import { Lecture } from '@/types/global.type';
 import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -25,9 +26,9 @@ const CourseListScreen = () => {
         const fetchLectures = async() => {
             toggleLoading()
             try {
-                const response = await getAllLectures({ pageSize: '1000', info: true, active: true })
-                const data = await response.json();
-                setLectures(data.data.result)
+                const response = await LectureService.getAllLectures({ pageSize: 1000, info: true, active: true })
+                const data = await response.data;
+                setLectures(data)
             } catch (error) {
                 console.error('Error fetching lectures:', error);
             } finally {
@@ -52,21 +53,9 @@ const CourseListScreen = () => {
                     <Text className="text-xl font-semibold text-gray-800 mb-3">{item.name}</Text>
                     <AntDesign name="rightcircleo" size={20} color="#004B8D" />
                 </View>
-                <View className="flex-row flex-wrap">
-                    {visibleTopics.map((topic: any, index: number) => (
-                        <View
-                            key={index}
-                            className="bg-[#004B8D] text-white py-1 px-2 rounded-full mr-2 mb-1"
-                        >
-                            <Text className="text-white text-sm">{topic.name}</Text>
-                        </View>
-                    ))}
-                    {hasMore && (
-                        <View className="bg-gray-300 text-gray-700 py-1 px-2 rounded-full mb-1">
-                            <Text className="text-gray-700">...</Text>
-                        </View>
-                    )}
-                </View>
+                <BadgeList
+                    list={visibleTopics}
+                />
             </TouchableOpacity>
         );
     };

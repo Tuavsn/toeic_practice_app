@@ -1,4 +1,4 @@
-import Loader from "@/components/loader/Loader";
+import Loader from "@/components/Loader";
 import { OAUTH2_REDIRECT_URL, OAUTH2_URL } from "@/constants/api";
 import useAuth from "@/hooks/auth/useAuth";
 import AsyncStorage from "@react-native-async-storage/async-storage";

@@ -1,8 +1,8 @@
-import CourseMenuButton from "@/components/home_menu/CourseMenuButton";
-import PracticeMenuButton from "@/components/home_menu/PracticeMenuButton";
-import Loader from "@/components/loader/Loader";
-import DiscoverStudyPath from "@/components/studypath/DiscoverStudyPath";
-import UserHistory from "@/components/user_history/UserHistory";
+import CourseMenuButton from "@/components/common/button/CourseMenuButton";
+import PracticeMenuButton from "@/components/common/button/PracticeMenuButton";
+import Loader from "@/components/Loader";
+import DiscoverStudyPath from "@/components/DiscoverStudyPath";
+import UserHistory from "@/components/UserHistory";
 import useAuth from "@/hooks/auth/useAuth";
 import React from "react";
 import { RefreshControl, ScrollView, Text, View } from "react-native";

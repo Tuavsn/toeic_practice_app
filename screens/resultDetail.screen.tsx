@@ -1,6 +1,6 @@
-import Loader from '@/components/loader/Loader';
-import QuestionDisplay from '@/components/test_card/QuestionDisplay';
-import ProgressBar from '@/components/user_history/ProgressBar';
+import Loader from '@/components/Loader';
+import QuestionDisplay from '@/components/QuestionDisplay';
+import ProgressBar from '@/components/common/stat/ProgressBar';
 import useAuth from '@/hooks/auth/useAuth';
 import { getResultById } from '@/services/result.service';
 import { Result, UserAnswer } from '@/types/global.type';

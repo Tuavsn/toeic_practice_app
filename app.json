@@ -1,17 +1,13 @@
 {
   "expo": {
-    "name": "temp",
-    "slug": "temp",
+    "name": "toeic_practice_app_v2",
+    "slug": "toeic_practice_app_v2",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/Main-Logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/Main-Logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
@@ -27,7 +23,16 @@
       "favicon": "./assets/images/Main-logo.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/Main-Logo.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -1,7 +1,7 @@
-import Loader from "@/components/loader/Loader";
-import QuestionDisplay from "@/components/test_card/QuestionDisplay";
+import Loader from "@/components/Loader";
+import QuestionDisplay from "@/components/QuestionDisplay";
 import useAuth from "@/hooks/auth/useAuth";
-import { getAllTestQuestions, submitTest } from "@/services/test.service";
+import testService from "@/services/test.service";
 import { AnswerPair, Question } from "@/types/global.type";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -32,9 +32,9 @@ export default function TestDetailScreen() {
         const fetchTestQuestions = async () => {
             toggleLoading();
             try {
-                const result = await getAllTestQuestions(testId as string);
-                const questionsData = await result.json();
-                setQuestions(questionsData.data.listMultipleChoiceQuestions);
+                const result = await testService.getTestQuestions(testId as string);
+                const questionsData = await result.data;
+                setQuestions(questionsData.listMultipleChoiceQuestions);
             } catch (error) {
                 console.error('Error fetching exercises:', error);
             } finally {
@@ -76,7 +76,7 @@ export default function TestDetailScreen() {
                 }
             })
 
-            const submitResponse = await submitTest({
+            const submitResponse = await testService.submitTest({
                 userAnswer: answers,
                 testId: testId as string,
                 totalSeconds: 0,
@@ -88,7 +88,7 @@ export default function TestDetailScreen() {
 
             alert("Nộp bài thành công")
 
-            const resultData = await submitResponse.json()
+            const resultData = await submitResponse.data
 
             await router.push({
                 pathname: '/(main)/result',
@@ -125,34 +125,34 @@ export default function TestDetailScreen() {
                                         onAnswerSelect={(questionId, answer) => handleAnswerSelection(questionId as string, answer)}
                                     />
                                 ))}
+                                <View className="flex-row justify-between mt-2 mb-14">
+                                    <View className="flex-row gap-4">
+                                        <View>
+                                            <Button
+                                                color={"#004B8D"}
+                                                title="Previous"
+                                                onPress={() => handlePageChange(page - 1)}
+                                                disabled={page === 1}
+                                            />
+                                        </View>
+                                        <View>
+                                            <Button
+                                                color={"#004B8D"}
+                                                title="Next"
+                                                onPress={() => handlePageChange(page + 1)}
+                                                disabled={end >= questions.length}
+                                            />
+                                        </View>
+                                    </View>
+                                    <View>
+                                        <Button
+                                            color={"#004B8D"}
+                                            title="Submit"
+                                            onPress={() => handleSubmit()}
+                                        />
+                                    </View>
+                                </View>
                             </ScrollView>
-                            <View className="flex-row justify-between mt-4">
-                                <View className="flex-row gap-4">
-                                    <View>
-                                        <Button
-                                            color={"#004B8D"}
-                                            title="Previous"
-                                            onPress={() => handlePageChange(page - 1)}
-                                            disabled={page === 1}
-                                        />
-                                    </View>
-                                    <View>
-                                        <Button
-                                            color={"#004B8D"}
-                                            title="Next"
-                                            onPress={() => handlePageChange(page + 1)}
-                                            disabled={end >= questions.length}
-                                        />
-                                    </View>
-                                </View>
-                                <View>
-                                    <Button
-                                        color={"#004B8D"}
-                                        title="Submit"
-                                        onPress={() => handleSubmit()}
-                                    />
-                                </View>
-                            </View>
                         </>
                     )}
                 </View>

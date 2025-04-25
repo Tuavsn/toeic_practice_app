@@ -1,7 +1,7 @@
-import Loader from "@/components/loader/Loader";
+import Loader from "@/components/Loader";
 import useAuth from "@/hooks/auth/useAuth";
-import { getAllQuestions } from "@/services/question.service";
-import { getAllResults } from "@/services/result.service";
+import questionService from "@/services/question.service";
+import resultService from "@/services/result.service";
 import { PracticeType, Question, Result } from "@/types/global.type";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
@@ -67,16 +67,16 @@ export default function PracticeListScreen({ type }: PracticeListScreenProps) {
         if (selectedPractice) {
             try {
                 setCollapseLoading((prev) => ({ ...prev, [practiceId]: true }));
-                const response = await getAllQuestions({
-                    pageSize: pageSize.toString(),
+                const response = await questionService.getAllQuestions({
+                    pageSize: pageSize,
                     partNum: practiceId,
-                    current: currentPage.toString(),
+                    current: currentPage,
                 });
-                const data = await response.json();
+                const data = await response.data;
                 setPractices((prevPractices) =>
                     prevPractices.map((practice) =>
                         practice.id === practiceId
-                            ? { ...practice, exercises: data.data.result }
+                            ? { ...practice, exercises: data }
                             : practice
                     )
                 );
@@ -115,9 +115,9 @@ export default function PracticeListScreen({ type }: PracticeListScreenProps) {
     const fetchUserResults = async () => {
         toggleLoading()
         try {
-            const userAnswersResponse = await getAllResults({ pageSize: "999", type: 'QUESTION' });
-            const userAnswersData = await userAnswersResponse.json();
-            const userAnswerIdsSet = new Set<string>(userAnswersData.data.result.map((result: Result) => result.userAnswers[0].questionId));
+            const userAnswersResponse = await resultService.getAllResults({ pageSize: 999, type: 'QUESTION' });
+            const userAnswersData = await userAnswersResponse.data;
+            const userAnswerIdsSet = new Set<string>(userAnswersData.map((result: Result) => result.userAnswers[0].questionId));
             setUserAnswerIds(userAnswerIdsSet);
         } catch (error) {
             console.error('Error fetching result:', error);

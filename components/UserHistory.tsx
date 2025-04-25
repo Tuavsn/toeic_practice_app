@@ -1,11 +1,11 @@
 import useAuth from "@/hooks/auth/useAuth";
-import { getAllResults } from "@/services/result.service";
 import { Result, Test } from "@/types/global.type";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Text, View, Button, TouchableOpacity } from "react-native";
-import ProgressBar from "./ProgressBar";
+import ProgressBar from "./common/stat/ProgressBar";
 import { useRouter } from "expo-router";
+import resultService from "@/services/result.service";
 
 const ITEMS_PER_PAGE = 10; // Number of items per page
 
@@ -24,14 +24,14 @@ export default function UserHistory() {
 
     // Group the results by testId
     const groupedResults = () => {
-        const grouped = results.reduce((acc, result) => {
+        const grouped = results?.length > 0 ? results.reduce((acc, result) => {
             const { testId } = result;
             if (!acc[testId]) {
                 acc[testId] = [];
             }
             acc[testId].push(result);
             return acc;
-        }, {} as Record<string, Result[]>);
+        }, {} as Record<string, Result[]>) : [];
 
         return grouped;
     };
@@ -39,9 +39,9 @@ export default function UserHistory() {
     const fetchPracticeResults = async () => {
         toggleLoading();
         try {
-            const response = await getAllResults({ pageSize: "999", type: "PRACTICE" });
-            const data = await response.json();
-            setResults(data.data.result);
+            const response = await resultService.getAllResults({ pageSize: 999, type: "PRACTICE" });
+            const data = await response.data;
+            setResults(data);
         } catch (error) {
             console.error("Lỗi khi lấy kết quả bài kiểm tra:", error);
         } finally {

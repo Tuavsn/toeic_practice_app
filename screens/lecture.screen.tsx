@@ -1,6 +1,5 @@
-import Loader from "@/components/loader/Loader";
+import Loader from "@/components/Loader";
 import useAuth from "@/hooks/auth/useAuth";
-import { getLectureById } from "@/services/lecture.service";
 import { Lecture } from "@/types/global.type";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -8,6 +7,7 @@ import { Dimensions, Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import RenderHTML from "react-native-render-html";
+import lectureService from "@/services/lecture.service";
 
 export default function LectureScreen() {
 
@@ -21,9 +21,9 @@ export default function LectureScreen() {
         const fetchLecture = async () => {
             toggleLoading();
             try {
-                const response = await getLectureById(lectureId as string, { pageSize: '1000', info: true, content: true, practice: true });
-                const data = await response.json();
-                setLecture(data.data);
+                const response = await lectureService.getLectureById(lectureId as string, { pageSize: 1000, info: true, content: true, practice: true });
+                const data = await response.data;
+                setLecture(data);
             } catch (error) {
                 console.error("Error fetching lectures:", error);
             } finally {

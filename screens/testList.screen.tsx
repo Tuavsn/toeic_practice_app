@@ -1,7 +1,7 @@
-import Loader from "@/components/loader/Loader";
+import Loader from "@/components/Loader";
 import useAuth from "@/hooks/auth/useAuth";
-import { getAllCategories, getAllTestsByCategory } from "@/services/category.service";
-import { getAllResults } from "@/services/result.service";
+import categoryService from "@/services/category.service";
+import resultService from "@/services/result.service";
 import { Category, Result, Test } from "@/types/global.type";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
@@ -45,17 +45,16 @@ export default function TestListScreen() {
         const fetchCategoriesAndTests = async () => {
             toggleLoading()
             try {
-                const categoriesResponse = await getAllCategories();
-                const categoriesData = await categoriesResponse.json();
+                const categoriesResponse = await categoryService.getAllCategories();
+                const categoriesData = await categoriesResponse.data;
                 // Fetch tests for each category
                 const categoriesWithTests = await Promise.all(
-                    categoriesData.data.result.map(async (category: Category) => {
-                        const testsResponse = await getAllTestsByCategory(category.id);
-                        const testsData = await testsResponse.json();
-                        console.log(testsData)
+                    categoriesData.map(async (category: Category) => {
+                        const testsResponse = await categoryService.getAllTestsByCategory(category.id as string);
+                        const testsData = await testsResponse.data;
                         return {
                             ...category,
-                            tests: testsData.data.result,
+                            tests: testsData,
                         };
                     })
                 );
@@ -72,10 +71,10 @@ export default function TestListScreen() {
     const fetchUserResults = async () => {
         toggleLoading()
         try {
-            const userAnswersResponse = await getAllResults({ pageSize: "999", type: 'PRACTICE' });
-            const userAnswersData = await userAnswersResponse.json();
+            const userAnswersResponse = await resultService.getAllResults({ pageSize: 999, type: 'PRACTICE' });
+            const userAnswersData = await userAnswersResponse.data;
 
-            const userTestIdsSet = new Set<string>(userAnswersData.data.result.map((result: Result) => result.testId));
+            const userTestIdsSet = new Set<string>(userAnswersData.map((result: Result) => result.testId));
             setUserTestIds(userTestIdsSet);
         } catch (error) {
             console.error('Error fetching results:', error);

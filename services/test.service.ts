@@ -1,77 +1,122 @@
-import { API_ENDPOINTS } from "@/constants/api"
+import { API_ENDPOINTS } from "@/constants/api";
+import { ApiResponse, PaginationMeta, Question, Test } from "@/types/global.type";
 import { SubmitRequest, User } from "@/types/global.type";
+import ApiHandler from "@/utils/ApiHandler";
+import Logger from "@/utils/Logger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+/**
+ * Parameters to filter and paginate tests
+ */
 interface FilterParams {
-    pageSize?: string;
-    current?: string;
-    search?: string;
-    orderAscBy?: string;
-    orderDescBy?: string;
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  orderAscBy?: string;
+  orderDescBy?: string;
 }
 
-export const getAllTests = async (filterParams: FilterParams) => {
-    const queryString = new URLSearchParams(filterParams as Record<string, string>).toString();
-    const url = queryString ? `${API_ENDPOINTS.TESTS}?${queryString}` : `${API_ENDPOINTS.TESTS}?pageSize=999`;
-    try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors'
-        })
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
-        }
-        return response;
-    } catch (error) {
-        console.error('Error fetching tests:', error);
-        throw error; // Có thể xử lý lỗi theo cách bạn muốn
-    }
+interface TestQuestions {
+    totalQuestion: number;
+    listMultipleChoiceQuestions: Question[];
 }
 
-export const getAllTestQuestions = async (testId: string) => {
-    const url = `${API_ENDPOINTS.TESTS}/${testId}/full-test`;
+/**
+ * Service for handling test-related API operations
+ */
+class TestService {
+  /**
+   * Fetch paginated list of tests with optional filtering
+   */
+  async getAllTests(
+    filterParams: FilterParams = {}
+  ): Promise<ApiResponse<Test[]>> {
+    Logger.info("Fetching tests with filters", filterParams);
+
     try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors'
-        })
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+      // Prepare params, converting values to strings
+      const params: Record<string, any> = {};
+      Object.entries(filterParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params[key] = value;
         }
-        return response;
+      });
+
+      // Defaults
+      if (!params.page) params.page = 1;
+      if (!params.pageSize) params.pageSize = 999;
+
+      const response = await ApiHandler.Get<Test[]>(
+        API_ENDPOINTS.TESTS,
+        params
+      );
+
+      Logger.debug(
+        `Got response for tests: success=${response.success}, count=${response.data?.length || 0}`
+      );
+
+      return response;
     } catch (error) {
-        console.error('Error fetching questions:', error);
-        throw error; // Có thể xử lý lỗi theo cách bạn muốn
+      Logger.error('Error in getAllTests:', error);
+      throw error;
     }
+  }
+
+  /**
+   * Fetch all questions for a specific test
+   */
+  async getTestQuestions(
+    testId: string
+  ): Promise<ApiResponse<TestQuestions>> {
+    Logger.info(`Fetching questions for test ID: ${testId}`);
+
+    try {
+      const response = await ApiHandler.Get<TestQuestions>(
+        `${API_ENDPOINTS.TESTS}/${testId}/full-test`
+      );
+
+      Logger.debug(
+        `Got response for test questions: success=${response.success}`
+      );
+
+      return response;
+    } catch (error) {
+      Logger.error(`Error in getTestQuestions (${testId}):`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Submit a completed test
+   */
+  async submitTest(
+    submission: SubmitRequest
+  ): Promise<ApiResponse<any>> {
+    Logger.info('Submitting test', { testId: submission.testId });
+
+    try {
+      // Retrieve user token
+      const raw = await AsyncStorage.getItem('userInfo');
+      if (!raw) {
+        Logger.error('User info not found in storage');
+        throw new Error('Authentication required');
+      }
+
+      const user: User = JSON.parse(raw);
+
+      const response = await ApiHandler.Post<any>(
+        `${API_ENDPOINTS.TESTS}/submit`,
+        submission,
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+
+      Logger.debug(`Test submission response: success=${response.success}`);
+      return response;
+    } catch (error) {
+      Logger.error('Error in submitTest:', error);
+      throw error;
+    }
+  }
 }
 
-export const submitTest = async (test: SubmitRequest) => {
-    const url = `${API_ENDPOINTS.TESTS}/submit`;
-    try {
-        const userData = await AsyncStorage.getItem('userInfo');
-        if (!userData) throw new Error('User data not found');
-        const user: User = await JSON.parse(userData);
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user.token}`
-            },
-            body: JSON.stringify(test),
-            mode: 'cors'
-        })
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
-        }
-        return response;
-    } catch (error) {
-        console.error('Error submit questions:', error);
-        throw error; // Có thể xử lý lỗi theo cách bạn muốn
-    }
-}
+export default new TestService();

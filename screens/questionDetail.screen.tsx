@@ -1,4 +1,4 @@
-import QuestionDisplay from "@/components/test_card/QuestionDisplay";
+import QuestionDisplay from "@/components/QuestionDisplay";
 import useAuth from "@/hooks/auth/useAuth";
 import { submitTest } from "@/services/test.service";
 import { AnswerPair, Question } from "@/types/global.type";

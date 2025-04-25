@@ -6,6 +6,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'react-native';
 import { AuthProvider } from '@/context/AuthContext';
 import { AudioManagerProvider } from '@/context/AudioContext';
+import '@/global.css'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

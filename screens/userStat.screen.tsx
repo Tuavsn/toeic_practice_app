@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, Dimensions, FlatList } from 'react-native';
 import { BarChart, PieChart } from 'react-native-chart-kit';
-import { styled } from 'nativewind';
 import useAuth from '@/hooks/auth/useAuth';
 import { getStat } from '@/services/user.service';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Loader from '@/components/loader/Loader';
+import Loader from '@/components/Loader';
 import { router } from 'expo-router';
 
 type TopicStat = {
@@ -50,9 +49,6 @@ type AccountStats = {
   skillStats: SkillStat[];
   results: Result[];
 };
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
 
 const StatScreen = () => {
 
@@ -175,36 +171,36 @@ const StatScreen = () => {
         <>
           {user !== null && (
             <View className='flex-1'>
-              <StyledView className="mb-6 p-6 bg-[#004B8D] rounded-lg shadow-lg border border-gray-200">
-                <StyledText className="text-white text-2xl font-semibold text-center">
+              <View className="mb-6 p-6 bg-[#004B8D] rounded-lg shadow-lg border border-gray-200">
+                <Text className="text-white text-2xl font-semibold text-center">
                   Đánh giá tổng quan
-                </StyledText>
-              </StyledView>
+                </Text>
+              </View>
 
               {/* Test Statistics */}
-              <StyledView className="bg-white rounded-2xl shadow-lg p-5 mb-6">
-                <StyledView className="py-3">
-                  <StyledText className="text-lg text-gray-700">
-                    Tổng số lần thực hiện bài kiểm tra: <StyledText className="font-bold">{totalTests}</StyledText>
-                  </StyledText>
-                </StyledView>
-                <StyledView className="py-3">
-                  <StyledText className="text-lg text-gray-700">
-                    Điểm reading trung bình: <StyledText className="font-bold">{averageReadingScore.toFixed(2)}</StyledText>
-                  </StyledText>
-                </StyledView>
-                <StyledView className="py-3">
-                  <StyledText className="text-lg text-gray-700">
-                    Điểm listening trung bình: <StyledText className="font-bold">{averageListeningScore.toFixed(2)}</StyledText>
-                  </StyledText>
-                </StyledView>
-              </StyledView>
+              <View className="bg-white rounded-2xl shadow-lg p-5 mb-6">
+                <View className="py-3">
+                  <Text className="text-lg text-gray-700">
+                    Tổng số lần thực hiện bài kiểm tra: <Text className="font-bold">{totalTests}</Text>
+                  </Text>
+                </View>
+                <View className="py-3">
+                  <Text className="text-lg text-gray-700">
+                    Điểm reading trung bình: <Text className="font-bold">{averageReadingScore.toFixed(2)}</Text>
+                  </Text>
+                </View>
+                <View className="py-3">
+                  <Text className="text-lg text-gray-700">
+                    Điểm listening trung bình: <Text className="font-bold">{averageListeningScore.toFixed(2)}</Text>
+                  </Text>
+                </View>
+              </View>
 
               {/* Pie Chart */}
-              <StyledView className="bg-white rounded-2xl shadow-lg p-5 mb-6">
-                <StyledText className="text-xl font-semibold text-center text-gray-700 mb-4">
+              <View className="bg-white rounded-2xl shadow-lg p-5 mb-6">
+                <Text className="text-xl font-semibold text-center text-gray-700 mb-4">
                   Tỷ lệ trả lời đúng
-                </StyledText>
+                </Text>
                 <PieChart
                   data={pieChartData}
                   width={screenWidth - 40}
@@ -220,10 +216,10 @@ const StatScreen = () => {
                   paddingLeft="15"
                   absolute
                 />
-              </StyledView>
+              </View>
 
               {/* Bar Chart */}
-              <StyledView className="bg-white rounded-2xl shadow-lg p-5 mb-6">
+              <View className="bg-white rounded-2xl shadow-lg p-5 mb-6">
                 <BarChart
                   data={barChartData}
                   width={screenWidth - 40}
@@ -242,25 +238,25 @@ const StatScreen = () => {
                   }}
                   verticalLabelRotation={0}
                 />
-              </StyledView>
+              </View>
 
               {/* Solution List */}
-              <StyledView className="bg-white rounded-2xl shadow-lg p-5 mb-20">
-                <StyledText className="text-xl font-semibold text-center text-gray-700 mb-4">
+              <View className="bg-white rounded-2xl shadow-lg p-5 mb-20">
+                <Text className="text-xl font-semibold text-center text-gray-700 mb-4">
                   Đề xuất cải thiện
-                </StyledText>
+                </Text>
                 <FlatList
                   data={topicStats}
                   keyExtractor={(item, index) => `${item.topic.name}-${index}`}
                   renderItem={({ item }) => (
-                    <StyledView className="border-b border-gray-200 py-4">
-                      <StyledText className="text-lg font-medium text-gray-800">{item.topic.name}</StyledText>
-                      <StyledText className="text-sm text-gray-600">{item.topic.solution}</StyledText>
-                    </StyledView>
+                    <View className="border-b border-gray-200 py-4">
+                      <Text className="text-lg font-medium text-gray-800">{item.topic.name}</Text>
+                      <Text className="text-sm text-gray-600">{item.topic.solution}</Text>
+                    </View>
                   )}
                   scrollEnabled={false}
                 />
-              </StyledView>
+              </View>
             </View>
           )}
         </>

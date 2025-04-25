@@ -128,6 +128,29 @@ export interface BannerDataTypes {
     bannerImageUrl: any;
 }
 
+// Pagination metadata
+export interface PaginationMeta {
+    current: number;
+    pageSize: number;
+    totalPages: number;
+    totalItems: number;
+}
+  
+// Generic paginated response structure
+export interface PaginatedResponse<T> {
+    meta: PaginationMeta;
+}
+  
+// Interface for our ApiResponse
+export interface ApiResponse<T> {
+    data: T;
+    success: boolean;
+    message?: string;
+    statusCode: number;
+    meta?: PaginationMeta;
+}
+  
+
 // ENUM
 
 export enum Difficulty {
