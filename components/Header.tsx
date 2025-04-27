@@ -8,12 +8,14 @@ export default function Header() {
 
     const navigation = useNavigation();
 
+    const router = useRouter();
+
     const { user } = useAuth()
 
     // console.log(user?.token)
 
     return (
-        <View className="flex flex-row items-center justify-between p-3 bg-[#004B8D]">
+        <View className="flex flex-row items-center justify-between px-6 py-3 bg-[#004B8D] rounded-b-3xl">
             <TouchableOpacity 
                 className='flex-1 flex-row gap-4 items-center px-2' 
                 onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}>
@@ -25,7 +27,7 @@ export default function Header() {
                             source={{uri: user.avatar}}
                         />
                     ) : (
-                        <FontAwesome name="user-circle" size={50} color="white" />
+                        <FontAwesome name="user-circle" size={40} color="white" />
                     )
                 }
                 <View>
@@ -34,14 +36,20 @@ export default function Header() {
                     )}
                 </View>
             </TouchableOpacity>
-            {/* <View>
+            <View className="flex flex-row">
+                <TouchableOpacity
+                    className="mx-2 rounded-full bg-[#004B8D] px-3 py-2.5"
+                    onPress={() => router.push('/(main)/search')}
+                >
+                    <Fontisto name="search" size={25} color="white" />
+                </TouchableOpacity>
                 <TouchableOpacity
                     className="mx-2 rounded-full bg-[#004B8D] px-3 py-2.5"
                     onPress={() => router.push('/(main)/notify')}
                 >
-                    <Fontisto name="bell" size={32} color="white" />
+                    <Fontisto name="bell" size={25} color="white" />
                 </TouchableOpacity>
-            </View> */}
+            </View>
         </View>
     )
 }

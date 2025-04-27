@@ -17,7 +17,7 @@ export const StreakCarousel: React.FC = () => (
       {streaks.map((item, idx) => (
         <View key={idx} className="items-center mr-4">
           <View className={`w-12 h-12 rounded-full justify-center items-center border-2 ${
-            item.checked ? 'bg-blue-600 border-blue-600' : item.highlight ? 'border-gray-400' : 'border-gray-200'
+            item.checked ? 'bg-[#004B8D] border-[#004B8D]' : item.highlight ? 'border-gray-400' : 'border-gray-200'
           }`}>
             <Text className={`${
               item.checked ? 'text-white' : item.highlight ? 'text-gray-700 font-bold' : 'text-gray-400'
@@ -27,7 +27,7 @@ export const StreakCarousel: React.FC = () => (
         </View>
       ))}
       <TouchableOpacity className="justify-center">
-        <Text className="text-blue-600 font-medium">See all</Text>
+        <Text className="text-[#004B8D] font-medium">See all</Text>
       </TouchableOpacity>
     </ScrollView>
   </View>

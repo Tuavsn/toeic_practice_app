@@ -20,8 +20,8 @@ export default function TabsLayout() {
                 case "flashcard/index":
                     iconName = "book";
                     break;
-              case "search/index":
-                iconName = "search";
+              case "studypath/index":
+              iconName = "road";
                 break;
               case "statistic/index":
                 iconName = "bar-chart";
@@ -31,7 +31,7 @@ export default function TabsLayout() {
             }
             return <FontAwesome name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#007AFF',
+          tabBarActiveTintColor: '#004B8D',
           tabBarInactiveTintColor: 'gray',
           tabBarStyle: {
             position: 'absolute',
@@ -50,7 +50,7 @@ export default function TabsLayout() {
       >
         <Tabs.Screen name="index" options={{ tabBarLabel: "Home" }} />
         <Tabs.Screen name="flashcard/index" options={{ tabBarLabel: "Flash Card" }} />
-        <Tabs.Screen name="search/index" options={{ tabBarLabel: "Search" }} />
+        <Tabs.Screen name="studypath/index" options={{ tabBarLabel: "Study Path" }} />
         <Tabs.Screen name="statistic/index" options={{ tabBarLabel: "Stats" }} />
       </Tabs>
     </SafeAreaView>

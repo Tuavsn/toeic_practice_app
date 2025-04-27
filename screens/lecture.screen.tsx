@@ -65,10 +65,14 @@ export default function LectureScreen() {
                     <ScrollView className="flex-1 p-4">
                         {/* Thông tin bài giảng */}
                         <View className="mb-6 p-5 bg-[#004B8D] rounded-lg shadow-lg">
-                            <Text className="text-2xl font-bold text-white">{lecture?.name}</Text>
-                            <Text className="text-sm text-gray-200 mt-2">
-                                <Ionicons name="calendar-outline" size={16} color="#E5E7EB" /> Tạo lúc: {new Date(lecture?.createdAt as Date).toLocaleString()}
-                            </Text>
+                            {/* Overlay */}
+                            <View className="absolute inset-0 bg-black opacity-20" />
+                            <View className="relative">
+                                <Text className="text-2xl font-bold text-white">{lecture?.name}</Text>
+                                <Text className="text-sm text-white mt-2">
+                                    <Ionicons name="calendar-outline" size={16} color="#E5E7EB" /> Tạo lúc: {new Date(lecture?.createdAt as Date).toLocaleString()}
+                                </Text>
+                            </View>
                         </View>
 
                         {/* Nội dung bài giảng */}

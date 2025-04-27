@@ -23,12 +23,6 @@ export interface Lecture extends BaseObject {
     practiceQuestions: Question[];
 }
 
-export interface Lecture {
-    title: string;
-    content: string;
-    description: string;
-}
-
 export interface Assignment {
     require: number;
     totalQuestion: number;

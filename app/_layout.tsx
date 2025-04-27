@@ -42,49 +42,56 @@ export default function RootLayout() {
             headerTintColor: 'white'}}
           />
           <Stack.Screen name='(main)/course' options={{
-            title: "Khoá học",
+            title: "Grammar",
             headerTitleAlign: 'center',
             headerStyle: {backgroundColor: '#004B8D'},
             headerTitleStyle: {fontWeight: 'bold'},
             headerTintColor: 'white'}}
           />
           <Stack.Screen name='(main)/lecture'  options={{
-            title: "Bài giảng",
+            title: "Lecture",
             headerTitleAlign: 'center',
             headerStyle: {backgroundColor: '#004B8D'},
             headerTitleStyle: {fontWeight: 'bold'},
             headerTintColor: 'white'}}
           />
           <Stack.Screen name='(main)/test'  options={{
-            title: "Bài test",
+            title: "Test",
             headerTitleAlign: 'center',
             headerStyle: {backgroundColor: '#004B8D'},
             headerTitleStyle: {fontWeight: 'bold'},
             headerTintColor: 'white'}}
           />
           <Stack.Screen name='(main)/practice'  options={{
-            title: "Luyện tập",
+            title: "Practice",
             headerTitleAlign: 'center',
             headerStyle: {backgroundColor: '#004B8D'},
             headerTitleStyle: {fontWeight: 'bold'},
             headerTintColor: 'white'}}
           />
           <Stack.Screen name='(main)/result'  options={{
-            title: "Kết quả",
+            title: "Test Result",
+            headerTitleAlign: 'center',
+            headerStyle: {backgroundColor: '#004B8D'},
+            headerTitleStyle: {fontWeight: 'bold'},
+            headerTintColor: 'white'}}
+          />
+          <Stack.Screen name='(main)/search'  options={{
+            title: "Search",
             headerTitleAlign: 'center',
             headerStyle: {backgroundColor: '#004B8D'},
             headerTitleStyle: {fontWeight: 'bold'},
             headerTintColor: 'white'}}
           />
           <Stack.Screen name='(main)/notify'  options={{
-            title: "Thông báo",
+            title: "Notify",
             headerTitleAlign: 'center',
             headerStyle: {backgroundColor: '#004B8D'},
             headerTitleStyle: {fontWeight: 'bold'},
             headerTintColor: 'white'}}
           />
           <Stack.Screen name='(auth)/login'  options={{
-            title: "Đăng nhập",
+            title: "Login",
             headerTitleAlign: 'center',
             headerStyle: {backgroundColor: '#004B8D'},
             headerTitleStyle: {fontWeight: 'bold'},

@@ -32,7 +32,7 @@ const DrawerContent = () => {
         </View>
       </View>
       {user ? (
-        <>
+        <View className='flex-1 gap-2'>
           <DrawerItem
             icon={({ color, size }) => (
               <AntDesign
@@ -63,7 +63,7 @@ const DrawerContent = () => {
             style={{ backgroundColor: "#004B8D", elevation: 5}}
             onPress={() => logout()}
           />
-        </>
+        </View>
       ) : (
         <DrawerItem
           icon={({ color, size }) =>
