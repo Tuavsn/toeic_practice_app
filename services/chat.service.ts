@@ -1,7 +1,8 @@
-import { ApiResponse } from "@/types/global.type";
+import { ApiResponse, User } from "@/types/global.type";
 import { API_ENDPOINTS } from "@/constants/api";
 import Logger from "@/utils/Logger";
 import ApiHandler from "@/utils/ApiHandler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /**
  * Payload returned when starting a new chat session
@@ -48,10 +49,21 @@ class ChatService {
   ): Promise<ApiResponse<StartChatPayload> | null> {
     Logger.info("Starting new tutor chat", { questionId });
     try {
+      const raw = await AsyncStorage.getItem('userInfo');
+
+      if (!raw) {
+        Logger.error('User info not found in storage');
+        throw new Error('Authentication required');
+      }
+
+      const user: User = JSON.parse(raw);
+
       const response = await ApiHandler.Post<StartChatPayload>(
         `${API_ENDPOINTS.CHATGPT}/tutor`,
-        { questionId }
+        { questionId },
+        { headers: { Authorization: `Bearer ${user.token}` } }
       );
+
       Logger.debug(
         `startChat success=${response.success}, sessionId=${response.data?.sessionId}`
       );
@@ -72,10 +84,21 @@ class ChatService {
   ): Promise<ApiResponse<ContinueChatPayload> | null> {
     Logger.info("Continuing tutor chat", { questionId, sessionId });
     try {
+      const raw = await AsyncStorage.getItem('userInfo');
+
+      if (!raw) {
+        Logger.error('User info not found in storage');
+        throw new Error('Authentication required');
+      }
+
+      const user: User = JSON.parse(raw);
+
       const response = await ApiHandler.Post<ContinueChatPayload>(
         `${API_ENDPOINTS.CHATGPT}/tutor`,
-        { questionId, sessionId, message }
+        { questionId, sessionId, message },
+        { headers: { Authorization: `Bearer ${user.token}` } }
       );
+      
       Logger.debug(
         `continueChat success=${response.success}`
       );
