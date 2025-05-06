@@ -7,6 +7,8 @@ import { StatusBar } from 'react-native';
 import { AuthProvider } from '@/context/AuthContext';
 import { AudioManagerProvider } from '@/context/AudioContext';
 import '@/global.css'
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { QuestionsProvider } from '@/context/QuestionContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,78 +30,104 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <AudioManagerProvider>
-        <StatusBar barStyle="light-content" backgroundColor="#004B8D" />
-        <Stack>
-          <Stack.Screen name='index' options={{ headerShown: false }}/>
-          <Stack.Screen name='welcome-intro' options={{ headerShown: false }}/>
-          <Stack.Screen name='(auth)/profile' options={{
-            title: "Profile",
-            headerTitleAlign: 'center',
-            headerStyle: {backgroundColor: '#004B8D'},
-            headerTitleStyle: {fontWeight: 'bold'},
-            headerTintColor: 'white'}}
-          />
-          <Stack.Screen name='(main)/course' options={{
-            title: "Grammar",
-            headerTitleAlign: 'center',
-            headerStyle: {backgroundColor: '#004B8D'},
-            headerTitleStyle: {fontWeight: 'bold'},
-            headerTintColor: 'white'}}
-          />
-          <Stack.Screen name='(main)/lecture'  options={{
-            title: "Lecture",
-            headerTitleAlign: 'center',
-            headerStyle: {backgroundColor: '#004B8D'},
-            headerTitleStyle: {fontWeight: 'bold'},
-            headerTintColor: 'white'}}
-          />
-          <Stack.Screen name='(main)/test'  options={{
-            title: "Test",
-            headerTitleAlign: 'center',
-            headerStyle: {backgroundColor: '#004B8D'},
-            headerTitleStyle: {fontWeight: 'bold'},
-            headerTintColor: 'white'}}
-          />
-          <Stack.Screen name='(main)/practice'  options={{
-            title: "Practice",
-            headerTitleAlign: 'center',
-            headerStyle: {backgroundColor: '#004B8D'},
-            headerTitleStyle: {fontWeight: 'bold'},
-            headerTintColor: 'white'}}
-          />
-          <Stack.Screen name='(main)/result'  options={{
-            title: "Test Result",
-            headerTitleAlign: 'center',
-            headerStyle: {backgroundColor: '#004B8D'},
-            headerTitleStyle: {fontWeight: 'bold'},
-            headerTintColor: 'white'}}
-          />
-          <Stack.Screen name='(main)/search'  options={{
-            title: "Search",
-            headerTitleAlign: 'center',
-            headerStyle: {backgroundColor: '#004B8D'},
-            headerTitleStyle: {fontWeight: 'bold'},
-            headerTintColor: 'white'}}
-          />
-          <Stack.Screen name='(main)/notify'  options={{
-            title: "Notify",
-            headerTitleAlign: 'center',
-            headerStyle: {backgroundColor: '#004B8D'},
-            headerTitleStyle: {fontWeight: 'bold'},
-            headerTintColor: 'white'}}
-          />
-          <Stack.Screen name='(auth)/login'  options={{
-            title: "Login",
-            headerTitleAlign: 'center',
-            headerStyle: {backgroundColor: '#004B8D'},
-            headerTitleStyle: {fontWeight: 'bold'},
-            headerTintColor: 'white'}}
-          />
-          <Stack.Screen name='(drawer)'  options={{ headerShown: false }}/>
-        </Stack>
-      </AudioManagerProvider>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <QuestionsProvider>
+          <AudioManagerProvider>
+            <StatusBar barStyle="light-content" backgroundColor="#004B8D" />
+            {/* <GlobalAudioController /> */}
+            <Stack>
+              <Stack.Screen name='index' options={{ headerShown: false }}/>
+              <Stack.Screen name='welcome-intro' options={{ headerShown: false }}/>
+              <Stack.Screen name='(auth)/profile' options={{
+                title: "Profile",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/course' options={{
+                title: "Grammar",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/lecture'  options={{
+                title: "Lecture",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/testCategoryList'  options={{
+                title: "Test Category List",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/testList'  options={{
+                title: "Test List",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/test'  options={{
+                title: "Test",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/practiceList'  options={{
+                title: "Practice List",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/practice'  options={{
+                title: "Practice",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/result'  options={{
+                title: "Test Result",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/search'  options={{
+                title: "Search",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/notify'  options={{
+                title: "Notify",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(auth)/login'  options={{
+                title: "Login",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(drawer)'  options={{ headerShown: false }}/>
+            </Stack>
+          </AudioManagerProvider>
+        </QuestionsProvider>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }

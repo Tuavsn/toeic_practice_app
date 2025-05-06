@@ -12,29 +12,13 @@ export default function PracticeMenuButton() {
 
     return (
         <View className="flex gap-2 mb-1">
-            {/* <View className="flex flex-row gap-2 justify-between">
-                <TouchableOpacity className="bg-white py-5 rounded-2xl flex flex-col justify-center items-center min-w-[100px] grow" style={{
-                    shadowColor: "#171717",
-                    elevation: 4
-                }}>
-                    <FontAwesome5 name="spell-check" size={30} color="#004B8D" />
-                    <Text className="font-bold text-[#004B8D]">Vocabulary</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-white py-5 rounded-2xl flex flex-col justify-center items-center min-w-[100px] grow" style={{
-                    shadowColor: "#171717",
-                    elevation: 4
-                }}>
-                    <Entypo name="open-book" size={30} color="#004B8D" />
-                    <Text className="font-bold text-[#004B8D]">Grammar</Text>
-                </TouchableOpacity>
-            </View> */}
             <View className="flex flex-row gap-2 justify-between">
                 <TouchableOpacity className="bg-white py-5 rounded-2xl flex flex-col justify-center items-center min-w-[100px] grow" style={{
                     shadowColor: "#171717",
                     elevation: 4
                 }}
                 onPress={() => router.push({
-                    pathname: '/(main)/practice',
+                    pathname: '/(main)/practiceList',
                     params: { type: PracticeType.LISTENING, isList: "true" }
                 })}
                 >
@@ -46,8 +30,8 @@ export default function PracticeMenuButton() {
                     elevation: 4
                 }}
                 onPress={() => router.push({
-                    pathname: '/(main)/practice',
-                    params: { type: PracticeType.READING, isList: "true" }
+                    pathname: '/(main)/practiceList',
+                    params: { type: PracticeType.READING }
                 })}
                 >
                     <FontAwesome5 name="book-reader" size={30} color="#004B8D" />
@@ -59,8 +43,7 @@ export default function PracticeMenuButton() {
                         elevation: 4,
                     }}
                     onPress={() => router.push({
-                        pathname: '/(main)/test',
-                        params: { isList: "true" }
+                        pathname: '/(main)/testList'
                     })}
                     >
                         <FontAwesome6 name="file-circle-check" size={30} color="#004B8D" />

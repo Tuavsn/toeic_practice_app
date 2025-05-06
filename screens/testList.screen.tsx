@@ -1,105 +1,104 @@
-import Loader from "@/components/Loader";
 import useAuth from "@/hooks/auth/useAuth";
 import categoryService from "@/services/category.service";
-import resultService from "@/services/result.service";
-import { Category, Result, Test } from "@/types/global.type";
+import { Test } from "@/types/global.type";
 import { FontAwesome6, Ionicons, MaterialIcons, AntDesign } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
-import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   FlatList,
   Text,
   TouchableOpacity,
   View,
-  Dimensions,
   Animated,
 } from "react-native";
-import Collapsible from "react-native-collapsible";
-import { ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from 'expo-haptics';
 import LottieView from 'lottie-react-native';
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { width } = Dimensions.get('window');
 const ITEMS_PER_PAGE = 5;
+const COMPLETED_TESTS_KEY = 'completed_tests';
 
 export default function TestListScreen() {
   const router = useRouter();
   const { user, loading, toggleLoading } = useAuth();
+  const { categoryId } = useLocalSearchParams();
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [collapseLoading, setCollapseLoading] = useState<{ [key: string]: boolean }>({});
-  const [collapsed, setCollapsed] = useState<string | null>(null);
-  const [page, setPage] = useState<{ [key: string]: number }>({});
+  const [tests, setTests] = useState<Test[]>([]);
+  const [page, setPage] = useState<number>(1);
   const [userTestIds, setUserTestIds] = useState<Set<string>>(new Set());
+  const [loadingCompletedTests, setLoadingCompletedTests] = useState<boolean>(true);
   
   // Animation references
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
-  const rotateAnimations = useRef<{ [key: string]: Animated.Value }>({}).current;
 
-  // Initialize rotation animations for each category
-  useEffect(() => {
-    categories.forEach(category => {
-      if (category.id && !rotateAnimations[category.id]) {
-        rotateAnimations[category.id] = new Animated.Value(0);
+  // Load completed tests from AsyncStorage
+  const loadCompletedTests = async () => {
+    setLoadingCompletedTests(true);
+    try {
+      const testsData = await AsyncStorage.getItem(COMPLETED_TESTS_KEY);
+      if (testsData) {
+        const parsedTestIds = JSON.parse(testsData);
+        setUserTestIds(new Set(parsedTestIds));
       }
-    });
-  }, [categories]);
+    } catch (error) {
+      console.error('Error loading completed tests:', error);
+    } finally {
+      setLoadingCompletedTests(false);
+    }
+  };
+
+  // Save a test ID to completed tests
+  const saveCompletedTest = async (testId: string) => {
+    try {
+      // Get current completed tests
+      const testsData = await AsyncStorage.getItem(COMPLETED_TESTS_KEY);
+      let completedTests: string[] = [];
+      
+      if (testsData) {
+        completedTests = JSON.parse(testsData);
+      }
+      
+      // Add new test ID if not already in the list
+      if (!completedTests.includes(testId)) {
+        completedTests.push(testId);
+        await AsyncStorage.setItem(COMPLETED_TESTS_KEY, JSON.stringify(completedTests));
+        
+        // Update local state
+        setUserTestIds(new Set(completedTests));
+      }
+    } catch (error) {
+      console.error('Error saving completed test:', error);
+    }
+  };
 
   const handlePress = async (testId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    
+    // Mark this test as completed when the user starts it
+    await saveCompletedTest(testId);
+    
     await router.push({
       pathname: '/(main)/test',
       params: { testId },
     });
   };
 
-  const fetchCategoriesAndTests = async () => {
+  const fetchTests = async () => {
     toggleLoading();
     try {
-      const { data: cats } = await categoryService.getAllCategories();
-      const withTests = await Promise.all(
-        cats.map(async (category: Category) => {
-          const { data: tests } = await categoryService.getAllTestsByCategory(category.id!);
-          return { ...category, tests };
-        })
-      );
-      setCategories(withTests);
+      const { data: tests } = await categoryService.getAllTestsByCategory(categoryId as string);
+      setTests(tests);
     } catch (err) {
-      console.error('Error fetching categories/tests:', err);
+      console.error('Error fetching tests:', err);
     } finally {
       toggleLoading();
     }
   };
 
-  const toggleCollapse = (id: string) => {
-    const isCollapsed = collapsed === id;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
-    // Rotate animation
-    if (rotateAnimations[id]) {
-      Animated.timing(rotateAnimations[id], {
-        toValue: isCollapsed ? 0 : 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-    
-    setCollapsed(isCollapsed ? null : id);
-    
-    if (!isCollapsed) {
-      setPage((prev) => ({ ...prev, [id]: 1 }));
-      
-      // Set loading state when expanding
-      setCollapseLoading((prev) => ({ ...prev, [id]: true }));
-      setTimeout(() => {
-        setCollapseLoading((prev) => ({ ...prev, [id]: false }));
-      }, 500);
-    }
-  };
-
+  // Animation when component mounts
   useEffect(() => {
     const prepareData = async () => {
       // Start entrance animations
@@ -118,33 +117,18 @@ export default function TestListScreen() {
     };
   
     prepareData();
-    setCollapsed(null);
   }, []);
-
-  // Fetch user completed tests
-  const fetchUserResults = async () => {
-    toggleLoading();
-    try {
-      const res = await resultService.getAllResults({ pageSize: 999, type: 'PRACTICE' });
-      const ids = new Set(res.data.map((r: Result) => r.testId));
-      setUserTestIds(ids);
-    } catch (err) {
-      console.error('Error fetching results:', err);
-    } finally {
-      toggleLoading();
-    }
-  };
-
+  
   // On mount
   useEffect(() => {
-    fetchCategoriesAndTests();
-  }, []);
+    fetchTests();
+  }, [categoryId]);
 
   // On focus
   useFocusEffect(
     useCallback(() => {
-      if (user) fetchUserResults();
-      setCollapsed(null);
+      // Load completed tests from AsyncStorage when screen is focused
+      loadCompletedTests();
     }, [user])
   );
 
@@ -161,23 +145,12 @@ export default function TestListScreen() {
     }
   };
 
-  // Get category icon based on format or year
-  const getCategoryIcon = (category: Category) => {
-    if (category.format?.toLowerCase().includes('toeic')) {
-      return "school";
-    } else if (category.format?.toLowerCase().includes('ielts')) {
-      return "stars";
-    } else {
-      return "event-note"; // Default icon
-    }
-  };
-
-  const renderTests = (tests: Test[] = [], categoryId: string) => {
-    const currentPage = page[categoryId] || 1;
+  const renderTests = () => {
+    const currentPage = page;
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const currentPageTests = tests.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-    if(collapseLoading[categoryId]) {
+    if(loading || loadingCompletedTests) {
       return (
         <View className="items-center justify-center py-8">
           <LottieView
@@ -257,12 +230,12 @@ export default function TestListScreen() {
                       
                       <View className="flex-row items-center bg-gray-100 px-2 py-0.5 rounded-md mr-2">
                         <AntDesign name="questioncircleo" size={12} color="#666" />
-                        <Text className="text-gray-600 text-xs ml-1">{item.totalQuestion} câu hỏi</Text>
+                        <Text className="text-gray-600 text-xs ml-1">{item.totalQuestion} Questions</Text>
                       </View>
                       
                       <View className="flex-row items-center bg-gray-100 px-2 py-0.5 rounded-md">
                         <AntDesign name="star" size={12} color="#666" />
-                        <Text className="text-gray-600 text-xs ml-1">{item.totalScore} điểm</Text>
+                        <Text className="text-gray-600 text-xs ml-1">{item.totalScore} Point</Text>
                       </View>
                     </View>
                   </View>
@@ -278,35 +251,35 @@ export default function TestListScreen() {
               </Animated.View>
             );
           }}
-          keyExtractor={(item) => `${categoryId}-${item.id}`}
+          keyExtractor={(item) => item.id!}
           showsVerticalScrollIndicator={false}
         />
         
         <View className="flex-row justify-between items-center mt-4">
           <TouchableOpacity
-            className={`flex-row items-center px-3 py-2 rounded-lg ${currentPage === 1 ? 'bg-gray-200' : 'bg-blue-600'}`}
+            className={`flex-row items-center px-3 py-2 rounded-lg ${page === 1 ? 'bg-gray-200' : 'bg-blue-600'}`}
             onPress={() => {
-              if (currentPage > 1) {
+              if (page > 1) {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setPage((prev) => ({ ...prev, [categoryId]: prev[categoryId] - 1 }));
+                setPage(page - 1);
               }
             }}
-            disabled={currentPage === 1}
+            disabled={page === 1}
           >
-            <Ionicons name="chevron-back" size={16} color={currentPage === 1 ? "#718096" : "#fff"} />
-            <Text className={`ml-1 font-medium ${currentPage === 1 ? 'text-gray-500' : 'text-white'}`}>
+            <Ionicons name="chevron-back" size={16} color={page === 1 ? "#718096" : "#fff"} />
+            <Text className={`ml-1 font-medium ${page === 1 ? 'text-gray-500' : 'text-white'}`}>
               Previous
             </Text>
           </TouchableOpacity>
           
-          <Text className="text-gray-600">Page {currentPage || 1}</Text>
+          <Text className="text-gray-600">Page {page}</Text>
           
           <TouchableOpacity
             className={`flex-row items-center px-3 py-2 rounded-lg ${currentPageTests.length < ITEMS_PER_PAGE ? 'bg-gray-200' : 'bg-blue-600'}`}
             onPress={() => {
               if (currentPageTests.length >= ITEMS_PER_PAGE) {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setPage((prev) => ({ ...prev, [categoryId]: (prev[categoryId] || 1) + 1 }));
+                setPage(page + 1);
               }
             }}
             disabled={currentPageTests.length < ITEMS_PER_PAGE}
@@ -321,109 +294,11 @@ export default function TestListScreen() {
     );
   };
 
-  const renderItem = ({ item, index }: { item: Category, index: number }) => {
-    const spin = rotateAnimations[item.id!]?.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0deg', '180deg']
-    }) || '0deg';
-    
-    const isCollapsed = collapsed !== item.id;
-    const categoryIcon = getCategoryIcon(item);
-    
-    return (
-      <Animated.View 
-        style={{
-          transform: [
-            { scale: scaleAnim },
-            { translateY: fadeAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [50 * index, 0]
-            })}
-          ],
-          opacity: fadeAnim
-        }}
-        className="mb-3 overflow-hidden rounded-xl shadow-sm bg-white"
-      >
-        <TouchableOpacity
-          className={`flex-row items-center justify-between p-4 ${!isCollapsed ? 'bg-blue-50 border-b border-blue-100' : 'bg-white'}`}
-          onPress={() => toggleCollapse(item.id!)}
-          activeOpacity={0.8}
-        >
-          <View className="flex-row items-center flex-1">
-            <View className="w-11 h-11 rounded-full bg-blue-50 items-center justify-center mr-3">
-              <MaterialIcons name={categoryIcon} size={22} color="#004B8D" />
-            </View>
-            
-            <Text className="text-lg font-semibold text-gray-800">{item.format} ({item.year})</Text>
-          </View>
-          
-          <View className="w-8 h-8 items-center justify-center">
-            {collapseLoading[item.id!] ? (
-              <ActivityIndicator size="small" color="#004B8D" />
-            ) : (
-              <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                <Ionicons
-                  name="chevron-down"
-                  size={22}
-                  color="#004B8D"
-                />
-              </Animated.View>
-            )}
-          </View>
-        </TouchableOpacity>
-        
-        <Collapsible collapsed={isCollapsed} duration={400} easing="easeOutCubic">
-          <View className="p-4 bg-gray-50">
-            {renderTests(item.tests, item.id!)}
-          </View>
-        </Collapsible>
-      </Animated.View>
-    );
-  };
-
-  const renderEmptyState = () => (
-    <View className="items-center justify-center py-16">
-      <LottieView
-        source={require('@/assets/animations/reading.json')}
-        autoPlay
-        loop
-        style={{ width: 180, height: 180 }}
-      />
-      <Text className="text-xl font-bold text-gray-800 mt-4 mb-2">
-        No Tests Available
-      </Text>
-      <Text className="text-base text-gray-600 text-center px-8">
-        Please check back later or try refreshing the page
-      </Text>
-    </View>
-  );
-
-  const renderHeader = () => (
-    <View className="mb-6 pb-4 border-b border-gray-200">
-      <Text className="text-2xl font-bold text-blue-900 mb-1">
-        Test List
-      </Text>
-      <Text className="text-base text-gray-600">
-        Select a test to start practicing
-      </Text>
-    </View>
-  );
-
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
-      {loading ? (
-        <Loader loadingText="Đang tải dữ liệu" />
-      ) : (
-        <FlatList
-          data={categories}
-          renderItem={renderItem}
-          keyExtractor={item => item.id!}
-          contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
-          ListHeaderComponent={renderHeader}
-          ListEmptyComponent={renderEmptyState}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+      <View className="flex-1 p-4">
+        {renderTests()}
+      </View>
     </SafeAreaView>
   );
 }

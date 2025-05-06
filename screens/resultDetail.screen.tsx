@@ -1,8 +1,8 @@
 import Loader from '@/components/Loader';
-import QuestionDisplay from '@/components/QuestionDisplay';
+import QuestionDisplay from '@/components/common/question/QuestionDisplay';
 import ProgressBar from '@/components/common/stat/ProgressBar';
 import useAuth from '@/hooks/auth/useAuth';
-import { getResultById } from '@/services/result.service';
+import resultService from '@/services/result.service';
 import { Result, UserAnswer } from '@/types/global.type';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -47,10 +47,10 @@ const ResultDetailScreen = () => {
         const fetchResult = async () => {
             toggleLoading()
             try {
-                var response = await getResultById(resultId as string);
-                const resultData = await response.json();
-                setResults(resultData.data);
-                setUserAnswer(resultData.data.userAnswers);
+                var response = await resultService.getResultById(resultId as string);
+                const resultData = await response.data;
+                setResults(resultData);
+                setUserAnswer(resultData.userAnswers);
             } catch (error) {
                 console.error('Error fetching exercises:', error);
             } finally {
@@ -64,8 +64,8 @@ const ResultDetailScreen = () => {
         navigation.setOptions({
             headerLeft: () => (
                 <Button
-                    title="Trang chủ"
-                    onPress={() => router.push('(drawer)/(tabs)')} // Navigate to Home screen
+                    title="Back"
+                    onPress={() => router.navigate('/(drawer)/(tabs)')}
                     color="#004B8D"
                 />
             ),
@@ -104,21 +104,21 @@ const ResultDetailScreen = () => {
                                     <Text className="text-gray-600">Điểm đọc: {results.totalReadingScore}</Text>
                                     <Text className="text-gray-600">Điểm nghe: {results.totalListeningScore}</Text>
                                     <View className='flex-row items-center justify-between'>
-                                        <Text className="text-gray-600">Số câu trả lời đúng: {results.totalCorrectAnswer}/{results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer}</Text>
+                                        <Text className="text-gray-600">Right Answers: {results.totalCorrectAnswer}/{results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer}</Text>
                                         <ProgressBar
                                             value={results.totalCorrectAnswer / (results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer)}
                                             color="#4CAF50"
                                         />
                                     </View>
                                     <View className='flex-row items-center justify-between'>
-                                        <Text className="text-gray-600">Số câu trả lời sai: {results.totalIncorrectAnswer}/{results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer}</Text>
+                                        <Text className="text-gray-600">Wrong Answers: {results.totalIncorrectAnswer}/{results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer}</Text>
                                         <ProgressBar
                                             value={results.totalIncorrectAnswer / (results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer)}
                                             color="#F44336"
                                         />
                                     </View>
                                     <View className='flex-row items-center justify-between'>
-                                        <Text className="text-gray-600">Số câu bỏ qua: {results.totalSkipAnswer}/{results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer}</Text>
+                                        <Text className="text-gray-600">Skip Answers: {results.totalSkipAnswer}/{results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer}</Text>
                                         <ProgressBar
                                             value={results.totalSkipAnswer / (results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer)}
                                             color="#FF9800"
@@ -127,25 +127,25 @@ const ResultDetailScreen = () => {
                                 </View>
 
                                 <View className="mt-8">
-                                    <Text className="text-lg font-bold text-gray-800 mb-2">Tỷ lệ câu hỏi</Text>
+                                    <Text className="text-lg font-bold text-gray-800 mb-2">Answers Rating</Text>
                                     <PieChart
                                         data={[
                                             {
-                                                name: "% Câu đúng",
+                                                name: "% Right Answers",
                                                 count: parseFloat((results.totalCorrectAnswer / (results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer) * 100).toFixed(2)),
                                                 color: "#4CAF50",
                                                 legendFontColor: "#4CAF50",
                                                 legendFontSize: 12
                                             },
                                             {
-                                                name: "% Câu sai",
+                                                name: "% Wrong Answers",
                                                 count: parseFloat((results.totalIncorrectAnswer / (results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer) * 100).toFixed(2)),
                                                 color: "#F44336",
                                                 legendFontColor: "#F44336",
                                                 legendFontSize: 12
                                             },
                                             {
-                                                name: "% Bỏ qua",
+                                                name: "% Skip Answers",
                                                 count: parseFloat((results.totalSkipAnswer / (results.totalCorrectAnswer + results.totalIncorrectAnswer + results.totalSkipAnswer) * 100).toFixed(2)),
                                                 color: "#FF9800",
                                                 legendFontColor: "#FF9800",

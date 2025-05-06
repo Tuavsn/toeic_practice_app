@@ -1,53 +1,59 @@
-import { ActivityIndicator, Image, View } from "react-native";
+import { ActivityIndicator, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Animatable from 'react-native-animatable';
+import LottieView from 'lottie-react-native';
 
 interface LoaderProps {
-    loadingText?: string;
+  loadingText?: string;
 }
 
 export default function Loader({ loadingText }: LoaderProps) {
+  const renderTextWithAnimation = (text: string) =>
+    text.split('').map((char, i) => (
+      <Animatable.Text
+        key={i}
+        animation="pulse"
+        iterationCount="infinite"
+        delay={i * 50}
+        style={{
+          fontSize: 25,
+          fontWeight: 'bold',
+          color: '#004B8D',
+          transform: [
+            { translateY: i % 2 === 0 ? -35 : 35 },
+            { scale: 1.4 },
+          ],
+        }}
+      >
+        {char}
+      </Animatable.Text>
+    ));
 
-    const renderTextWithAnimation = (text: string) => {
-        return text.split('').map((char, index) => (
-            <Animatable.Text
-                key={index}
-                animation="pulse"  // Thay đổi thành 'pulse' để tạo hiệu ứng nhấp nhô
-                iterationCount="infinite"
-                delay={index * 50}  // Delay nhanh hơn để tạo hiệu ứng sóng
-                style={{
-                fontSize: 25,
-                fontWeight: 'bold',
-                color: '#004B8D',
-                transform: [
-                    {
-                    translateY: index % 2 === 0 ? -35 : 35, // Tăng biên độ giao động mạnh hơn
-                    },
-                    {
-                    scale: 1.4, // Kết hợp với hiệu ứng scale để chữ cũng phóng to thêm một chút
-                    },
-                ],
-                }}
-            >
-            {char}
-          </Animatable.Text>
-        ));
-    };
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      {/* Phần chính: LottieView căn giữa nhưng nhích lên 75px */}
+      <View className="flex-1 justify-center items-center">
+        <LottieView
+          source={require('@/assets/animations/loading.json')}
+          autoPlay
+          loop
+          style={{
+            width: 150,
+            height: 150,
+            transform: [{ translateY: -75 }],  // đẩy lên nửa chiều cao
+          }}
+        />
 
-    return (
-        <SafeAreaView className="flex-1">
-            <View className="flex-1 items-center">
-                <Image
-                    className="w-[300px]"
-                    source={require('@/assets/images/Login-logo.png')}
-                />
-                {loadingText && (
-                    <View className="flex-row mt-4">
-                        {renderTextWithAnimation(loadingText)}
-                    </View>
-                )}
-                <ActivityIndicator className="mt-2" size="large" color="#004B8D" />
+        {/* Phần phụ: loadingText và spinner */}
+        {loadingText && (
+          <View className="items-center mt-4 translate-y-[-75]">
+            <View className="flex-row mb-2">
+              {renderTextWithAnimation(loadingText)}
             </View>
-        </SafeAreaView>
-    )
+            <ActivityIndicator size="large" color="#004B8D" />
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
+  );
 }

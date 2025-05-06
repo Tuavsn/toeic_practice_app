@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, Dimensions, FlatList } from 'react-native';
 import { BarChart, PieChart } from 'react-native-chart-kit';
 import useAuth from '@/hooks/auth/useAuth';
-import { getStat } from '@/services/user.service';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Loader from '@/components/Loader';
 import { router } from 'expo-router';
+import userService from '@/services/user.service';
 
 type TopicStat = {
   topic: {
@@ -113,8 +112,8 @@ const StatScreen = () => {
     const fetchAccountStat = async () => {
       toggleLoading()
       try {
-          const accountStatResponse = await getStat();
-          const accountStat = await accountStatResponse.json();
+          const accountStatResponse = await userService.getStat();
+          const accountStat = await accountStatResponse.data;
           const parsedAccountStat: AccountStats = {
             topicStats: accountStat.data.topicStats.map((stat: any) => ({
                 topic: {

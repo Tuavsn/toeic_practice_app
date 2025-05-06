@@ -39,7 +39,7 @@ export const LectureCard: React.FC<LectureCardProps> = ({ lecture, imageSrc, onS
           ) : null}
           <View>
             <TouchableOpacity className="bg-blue-600 px-4 py-2 rounded-lg self-start" activeOpacity={0.8}>
-              <Text className="text-white text-lg font-bold">Học ngay</Text>
+              <Text className="text-white text-lg font-bold">Learn now</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -7,7 +7,8 @@ export const API_ENDPOINTS = {
     QUESTIONS: `${API_URL}/api/v1/questions`,
     TESTS: `${API_URL}/api/v1/tests`,
     RESULT: `${API_URL}/api/v1/results`,
-    LECTURES: `${API_URL}/api/v1/lectures`
+    LECTURES: `${API_URL}/api/v1/lectures`,
+    CHATGPT: `${API_URL}/api/v1/chatgpt`,
 };
 
 export const OAUTH2_URL = process.env.EXPO_PUBLIC_OAUTH2_URL!

@@ -58,32 +58,23 @@ const items = [
         icon: <Ionicons name="book" size={ICON_SIZE} />,
         bg: '#FEFCE8',
         fg: '#92400E',
-        pathname: '/(main)/practice',
-        params: { type: PracticeType.READING, isList: "true" }
+        pathname: '/(main)/practiceList',
+        params: { type: PracticeType.READING }
     },
     {
         label: 'Listening',
         icon: <Ionicons name="headset" size={ICON_SIZE} />,
         bg: '#EFF6FF',
         fg: '#1E3A8A',
-        pathname: '/(main)/practice',
-        params: { type: PracticeType.LISTENING, isList: "true" }
+        pathname: '/(main)/practiceList',
+        params: { type: PracticeType.LISTENING }
     },
     {
-        label: 'Practice',
-        icon: <Ionicons name="newspaper" size={ICON_SIZE} />,
+        label: 'Test Practice',
+        icon: <MaterialCommunityIcons name="pencil-box-outline" size={ICON_SIZE} />,
         bg: '#FFF7ED',
         fg: '#9A3412',
-        pathname: '/(main)/test',
-        params: { isList: "true" }
-    },
-    {
-        label: 'Real Test',
-        icon: <MaterialCommunityIcons name="pencil-box-outline" size={ICON_SIZE} />,
-        bg: '#F0FDF4',
-        fg: '#065F46',
-        pathname: '/(main)/test',
-        params: { isList: "true" }
+        pathname: '/(main)/testCategoryList',
     },
 ];
 

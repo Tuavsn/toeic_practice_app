@@ -120,7 +120,7 @@ export default function UserHistory() {
                                         <Text className="text-gray-800">Điểm Nghe: {result.totalListeningScore}</Text>
                                         <View className="flex-row items-center justify-between">
                                             <Text className="text-gray-800">
-                                                Câu đúng: {result.totalCorrectAnswer}/{result.totalCorrectAnswer + result.totalIncorrectAnswer + result.totalSkipAnswer}
+                                                Right Answer: {result.totalCorrectAnswer}/{result.totalCorrectAnswer + result.totalIncorrectAnswer + result.totalSkipAnswer}
                                             </Text>
                                             <ProgressBar 
                                                 value={result.totalCorrectAnswer / (result.totalCorrectAnswer + result.totalIncorrectAnswer + result.totalSkipAnswer)} 
@@ -129,7 +129,7 @@ export default function UserHistory() {
                                         </View>
                                         <View className="flex-row items-center justify-between">
                                             <Text className="text-gray-800">
-                                                Câu sai: {result.totalIncorrectAnswer}/{result.totalCorrectAnswer + result.totalIncorrectAnswer + result.totalSkipAnswer}
+                                                Wrong Answer: {result.totalIncorrectAnswer}/{result.totalCorrectAnswer + result.totalIncorrectAnswer + result.totalSkipAnswer}
                                             </Text>
                                             <ProgressBar 
                                                 value={result.totalIncorrectAnswer / (result.totalCorrectAnswer + result.totalIncorrectAnswer + result.totalSkipAnswer)} 
@@ -138,7 +138,7 @@ export default function UserHistory() {
                                         </View>
                                         <View className="flex-row items-center justify-between">
                                             <Text className="text-gray-800">
-                                                Câu bỏ qua: {result.totalSkipAnswer}/{result.totalCorrectAnswer + result.totalIncorrectAnswer + result.totalSkipAnswer}
+                                                Skip Answer: {result.totalSkipAnswer}/{result.totalCorrectAnswer + result.totalIncorrectAnswer + result.totalSkipAnswer}
                                             </Text>
                                             <ProgressBar 
                                                 value={result.totalSkipAnswer / (result.totalCorrectAnswer + result.totalIncorrectAnswer + result.totalSkipAnswer)} 
