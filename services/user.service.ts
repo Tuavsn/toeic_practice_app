@@ -26,7 +26,7 @@ class StatService {
 
       // Request account data
       const response = await ApiHandler.Get<any>(
-        `${API_ENDPOINTS.AUTH}/account`,
+        `${API_ENDPOINTS.USERS}/account`,
         {},
         { headers: { Authorization: `Bearer ${user.token}` } }
       );

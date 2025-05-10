@@ -143,6 +143,24 @@ export interface ApiResponse<T> {
     statusCode: number;
     meta?: PaginationMeta;
 }
+
+export interface Deck {
+    id: number;
+    title: string;
+    description?: string;
+    imageUrl?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Card {
+    id: number;
+    deck_id: number;
+    front_text: string;
+    back_text: string;
+    created_at: string;
+    updated_at: string;
+}
   
 
 // ENUM

@@ -20,9 +20,6 @@ export default function TabsLayout() {
                 case "flashcard/index":
                     iconName = "book";
                     break;
-              case "studypath/index":
-              iconName = "road";
-                break;
               case "statistic/index":
                 iconName = "bar-chart";
                 break;
@@ -50,7 +47,6 @@ export default function TabsLayout() {
       >
         <Tabs.Screen name="index" options={{ tabBarLabel: "Home" }} />
         <Tabs.Screen name="flashcard/index" options={{ tabBarLabel: "Flash Card" }} />
-        <Tabs.Screen name="studypath/index" options={{ tabBarLabel: "Study Path" }} />
         <Tabs.Screen name="statistic/index" options={{ tabBarLabel: "Stats" }} />
       </Tabs>
     </SafeAreaView>

@@ -11,6 +11,7 @@ import questionService from '@/services/question.service';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import FloatingChatButton from "@/components/common/button/FloatingChatButton";
+import FloatingDictionary from "@/components/common/button/FloatingDictionary";
 
 interface ResultDetail {
   message: string;
@@ -435,6 +436,8 @@ export default function QuestionDetailScreen() {
       {currentQuestion?.id ? (
         <FloatingChatButton questionId={currentQuestion.id} />
       ) : null}
+      {/* Floating dictionary */}
+        <FloatingDictionary />
     </SafeAreaView>
   );
 }

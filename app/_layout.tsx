@@ -95,6 +95,41 @@ export default function RootLayout() {
                 headerTitleStyle: {fontWeight: 'bold'},
                 headerTintColor: 'white'}}
               />
+              <Stack.Screen name='(main)/vocabulary'  options={{
+                title: "Vocabulary",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/deskDetail'  options={{
+                title: "Vocabulary",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/flashcardDesk'  options={{
+                title: "Flash Card Deck",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/flashCard'  options={{
+                title: "Flash Card",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
+              <Stack.Screen name='(main)/dictionary'  options={{
+                title: "Dictionary",
+                headerTitleAlign: 'center',
+                headerStyle: {backgroundColor: '#004B8D'},
+                headerTitleStyle: {fontWeight: 'bold'},
+                headerTintColor: 'white'}}
+              />
               <Stack.Screen name='(main)/result'  options={{
                 title: "Test Result",
                 headerTitleAlign: 'center',
