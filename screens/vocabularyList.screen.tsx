@@ -35,7 +35,6 @@ const VocabularyScreen = () => {
     try {
       setLoading(true);
       const dbInstance = Database.getInstance();
-      await dbInstance.createTables();
       const allDecks = await dbInstance.getAllDecks();
       setDecks(allDecks);
       await loadSavedDecks();
