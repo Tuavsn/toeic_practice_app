@@ -1,5 +1,5 @@
-import TestDetailScreen from "@/screens/testDetail.screen";
+import TestDetailScreen from "@/screens/test/testDetail.screen";
 
 export default function Test() {
-    return <TestDetailScreen /> 
+  return <TestDetailScreen />
 }

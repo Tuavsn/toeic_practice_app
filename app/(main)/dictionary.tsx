@@ -1,8 +1,7 @@
-import DictionaryScreen from "@/screens/dictionary.screen";
+import DictionaryScreen from "@/screens/dictionary/dictionary.screen";
 
 export default function Dictionary() {
-
-    return (
-        <DictionaryScreen />
-    )
+  return (
+    <DictionaryScreen />
+  )
 }

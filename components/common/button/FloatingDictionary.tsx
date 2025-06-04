@@ -59,12 +59,19 @@ interface TranslationResponse {
   responseDetails: string;
 }
 
+interface SuggestedWord {
+  word: string;
+  score: number;
+}
+
 interface FloatingDictionaryProps {
   // Optional callback to be notified when the modal opens/closes
   onModalStateChange?: (isOpen: boolean) => void;
 }
 
 const API_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+const TRANSLATION_API_URL = "https://api.mymemory.translated.net/get";
+const DATAMUSE_API_URL = "https://api.datamuse.com/words";
 const HISTORY_STORAGE_KEY = "dictionary_history";
 const BOOKMARKS_STORAGE_KEY = "dictionary_bookmarks";
 
@@ -82,6 +89,11 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
   const [history, setHistory] = useState<string[]>([]);
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [translations, setTranslations] = useState<{ [key: string]: string }>({});
+  const [translationLoading, setTranslationLoading] = useState<{ [key: string]: boolean }>({});
+  
+  // Suggestion state (new)
+  const [suggestedWords, setSuggestedWords] = useState<SuggestedWord[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   
   // Animation refs
   const scale = useRef(new Animated.Value(1)).current;
@@ -195,8 +207,48 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
     setModalVisible(false);
     setShowHistory(false);
     setShowBookmarks(false);
+    setShowSuggestions(false);
     setResults(null);
     setError(null);
+  };
+
+  // Tìm kiếm danh sách từ gợi ý (new)
+  const searchSuggestedWords = async (searchTerm: string): Promise<void> => {
+    if (!searchTerm.trim()) {
+      Alert.alert("Thông báo", "Vui lòng nhập từ cần tra cứu");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      setResults(null); // Reset kết quả cũ
+      setSuggestedWords([]); // Reset từ gợi ý cũ
+
+      console.log(`Đang tìm kiếm từ gợi ý cho: ${searchTerm}`);
+      
+      // Sử dụng API Datamuse để tìm từ gợi ý
+      const response = await axios.get<SuggestedWord[]>(`${DATAMUSE_API_URL}?sp=${searchTerm}*&max=15`);
+      
+      if (response.data && response.data.length > 0) {
+        setSuggestedWords(response.data);
+        setShowSuggestions(true);
+        setShowHistory(false);
+        setShowBookmarks(false);
+        
+        // Haptic feedback for successful suggestion search
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else {
+        // Nếu không có từ gợi ý, thử tìm kiếm trực tiếp từ đó
+        await searchWord(searchTerm);
+      }
+    } catch (err) {
+      console.error("Lỗi khi tìm từ gợi ý:", err);
+      // Nếu có lỗi khi tìm từ gợi ý, thử tìm kiếm trực tiếp từ đó
+      await searchWord(searchTerm);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Tìm kiếm từ
@@ -212,6 +264,8 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
       setResults(null); // Reset kết quả cũ
       setShowHistory(false);
       setShowBookmarks(false);
+      setShowSuggestions(false);
+      setTranslations({}); // Reset bản dịch cũ
 
       console.log(`Đang tìm kiếm từ: ${searchTerm}`);
       const response = await axios.get<DictionaryResult[]>(`${API_URL}${searchTerm.toLowerCase()}`);
@@ -253,12 +307,24 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
   // Dịch sang tiếng Việt
   const translateToVietnamese = async (englishWord: string, defIndex: string): Promise<void> => {
     try {
-      // Kiểm tra nếu đã có bản dịch trong cache
-      if (translations[defIndex]) return;
+      // Đánh dấu đang tải bản dịch
+      setTranslationLoading(prev => ({
+        ...prev,
+        [defIndex]: true
+      }));
 
-      // Sử dụng API dịch
+      // Kiểm tra nếu đã có bản dịch trong cache
+      if (translations[defIndex]) {
+        setTranslationLoading(prev => ({
+          ...prev,
+          [defIndex]: false
+        }));
+        return;
+      }
+
+      // Sử dụng API dịch với tham số rõ ràng hơn
       const response = await axios.get<TranslationResponse>(
-        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(englishWord)}&langpair=en|vi`
+        `${TRANSLATION_API_URL}?q=${encodeURIComponent(englishWord)}&langpair=en|vi`
       );
 
       if (response.data && response.data.responseData) {
@@ -266,12 +332,22 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
           ...prev,
           [defIndex]: response.data.responseData.translatedText
         }));
+      } else {
+        setTranslations(prev => ({
+          ...prev,
+          [defIndex]: "Không thể dịch"
+        }));
       }
     } catch (err) {
       console.error('Lỗi dịch', err);
       setTranslations(prev => ({
         ...prev,
         [defIndex]: "Lỗi dịch"
+      }));
+    } finally {
+      setTranslationLoading(prev => ({
+        ...prev,
+        [defIndex]: false
       }));
     }
   };
@@ -289,6 +365,34 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
       });
     }
   }, [results]);
+
+  // Component hiển thị từ gợi ý (new)
+  const SuggestionsSection: React.FC = () => {
+    if (!showSuggestions || suggestedWords.length === 0) return null;
+
+    return (
+      <View className="bg-white rounded-lg shadow-sm mb-4">
+        <Text className="p-3 text-lg font-medium text-gray-700">Từ gợi ý</Text>
+        
+        <FlatList
+          data={suggestedWords}
+          keyExtractor={(item) => item.word}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => {
+                setWord(item.word);
+                searchWord(item.word);
+              }}
+              className="p-3 border-t border-gray-100 flex-row justify-between"
+            >
+              <Text className="text-gray-700">{item.word}</Text>
+              <Ionicons name="chevron-forward" size={18} color="#9ca3af" />
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    );
+  };
 
   // Component hiển thị kết quả
   const ResultSection: React.FC = () => {
@@ -345,23 +449,44 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
                   const translationKey = `${resultIndex}-${meaningIndex}-${defIndex}`;
                   return (
                     <View key={defIndex} className="mb-2 pl-2 border-l-2 border-gray-200">
+                      {/* Định nghĩa tiếng Anh */}
                       <Text className="text-gray-700">{defIndex + 1}. {def.definition}</Text>
 
                       {def.example && (
-                        <Text className="text-gray-500 italic mt-1">"{def.example}"</Text>
+                        <Text className="text-gray-500 italic mt-1">
+                          <Text className="font-medium">Ví dụ: </Text>
+                          "{def.example}"
+                        </Text>
                       )}
 
-                      <Text className="text-green-600 mt-1">
-                        {translations[translationKey] || "Đang dịch..."}
-                      </Text>
+                      {/* Bản dịch tiếng Việt */}
+                      <View className="flex-row items-center mt-1">
+                        <Text className="text-gray-600 font-medium mr-1">Nghĩa: </Text>
+                        {translationLoading[translationKey] ? (
+                          <ActivityIndicator size="small" color="#22c55e" />
+                        ) : (
+                          <Text className="text-green-600">
+                            {translations[translationKey] || "Đang dịch..."}
+                          </Text>
+                        )}
+                      </View>
                     </View>
                   );
                 })}
 
+                {/* Hiển thị từ đồng nghĩa */}
                 {meaning.synonyms && meaning.synonyms.length > 0 && (
                   <View className="mt-2">
                     <Text className="text-gray-700 font-medium">Từ đồng nghĩa:</Text>
                     <Text className="text-gray-600">{meaning.synonyms.slice(0, 5).join(", ")}</Text>
+                  </View>
+                )}
+                
+                {/* Hiển thị từ trái nghĩa */}
+                {meaning.antonyms && meaning.antonyms.length > 0 && (
+                  <View className="mt-2">
+                    <Text className="text-gray-700 font-medium">Từ trái nghĩa:</Text>
+                    <Text className="text-gray-600">{meaning.antonyms.slice(0, 5).join(", ")}</Text>
                   </View>
                 )}
               </View>
@@ -503,11 +628,11 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
                   value={word}
                   onChangeText={setWord}
                   returnKeyType="search"
-                  onSubmitEditing={() => searchWord(word)}
+                  onSubmitEditing={() => searchSuggestedWords(word)}
                   blurOnSubmit={true}
                 />
                 <TouchableOpacity
-                  onPress={() => searchWord(word)}
+                  onPress={() => searchSuggestedWords(word)}
                   disabled={loading || !word.trim()}
                   className={`${!word.trim() || loading ? 'opacity-50' : ''}`}
                 >
@@ -521,6 +646,7 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
                   onPress={() => {
                     setShowHistory(!showHistory);
                     if (showBookmarks) setShowBookmarks(false);
+                    if (showSuggestions) setShowSuggestions(false);
                   }}
                   className={`${showHistory ? 'bg-blue-500' : 'bg-white'} p-2 rounded-lg shadow-sm flex-row items-center`}
                 >
@@ -538,6 +664,7 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
                   onPress={() => {
                     setShowBookmarks(!showBookmarks);
                     if (showHistory) setShowHistory(false);
+                    if (showSuggestions) setShowSuggestions(false);
                   }}
                   className={`${showBookmarks ? 'bg-blue-500' : 'bg-white'} p-2 rounded-lg shadow-sm flex-row items-center`}
                 >
@@ -556,10 +683,11 @@ const FloatingDictionary: React.FC<FloatingDictionaryProps> = ({ onModalStateCha
               <View className="flex-1 px-4 pb-4">
                 <HistorySection />
                 <BookmarksSection />
+                <SuggestionsSection />
                 <ResultSection />
                 
                 {/* Initial state - Empty content */}
-                {!loading && !error && !results && !showHistory && !showBookmarks && (
+                {!loading && !error && !results && !showHistory && !showBookmarks && !showSuggestions && (
                   <View className="flex-1 justify-center items-center">
                     <Ionicons name="book-outline" size={60} color="#10B981" />
                     <Text className="text-center text-gray-600 mt-4 px-6">

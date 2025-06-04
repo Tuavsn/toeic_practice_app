@@ -16,12 +16,10 @@ export const StreakCarousel: React.FC = () => (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {streaks.map((item, idx) => (
         <View key={idx} className="items-center mr-4">
-          <View className={`w-12 h-12 rounded-full justify-center items-center border-2 ${
-            item.checked ? 'bg-[#004B8D] border-[#004B8D]' : item.highlight ? 'border-gray-400' : 'border-gray-200'
-          }`}>
-            <Text className={`${
-              item.checked ? 'text-white' : item.highlight ? 'text-gray-700 font-bold' : 'text-gray-400'
-            }`}>{item.value}</Text>
+          <View className={`w-12 h-12 rounded-full justify-center items-center border-2 ${item.checked ? 'bg-[#004B8D] border-[#004B8D]' : item.highlight ? 'border-gray-400' : 'border-gray-200'
+            }`}>
+            <Text className={`${item.checked ? 'text-white' : item.highlight ? 'text-gray-700 font-bold' : 'text-gray-400'
+              }`}>{item.value}</Text>
           </View>
           <Text className="text-gray-500 mt-1 text-xs">{item.day}</Text>
         </View>

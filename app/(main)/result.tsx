@@ -1,7 +1,7 @@
-import ResultDetailScreen from "@/screens/resultDetail.screen";
+import ResultDetailScreen from "@/screens/test/resultDetail.screen";
 
 export default function Result() {
-    return (
-        <ResultDetailScreen />
-    )
+  return (
+    <ResultDetailScreen />
+  )
 }

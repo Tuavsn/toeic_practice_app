@@ -1,49 +1,44 @@
 import React from 'react';
-import { ImageBackground, TouchableOpacity, Text, View } from 'react-native';
+import { TouchableOpacity, Text, View } from 'react-native';
 import { BadgeList } from '../badge/BadgeList';
 import { Lecture } from '@/types/global.type';
+import { FontAwesome, AntDesign } from "@expo/vector-icons";
 
 interface LectureCardProps {
   lecture: Lecture;
-  imageSrc: any;
   onSelect: () => void;
 }
 
-export const LectureCard: React.FC<LectureCardProps> = ({ lecture, imageSrc, onSelect }) => {
+export const LectureCard: React.FC<LectureCardProps> = ({ lecture, onSelect }) => {
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={0.7}
       onPress={onSelect}
-      className="w-full mb-4 rounded-2xl overflow-hidden shadow-md"
+      className="flex-row items-center p-3 bg-white rounded-lg border border-gray-200 mb-2 w-full"
     >
-      <ImageBackground
-        source={imageSrc}
-        className="w-full aspect-video"
-        imageStyle={{ borderRadius: 16 }}
-      >
-        {/* Overlay */}
-        <View className="absolute inset-0 bg-black opacity-40" />
-
-        {/* Content */}
-        <View className="relative p-4">
-          <Text className="text-white text-2xl font-bold mb-1" numberOfLines={2}>
-            {lecture.name}
-          </Text>
-          <View className="mb-2">
+      {/* Left Icon */}
+      <View className="w-10 h-10 rounded-full bg-blue-50 items-center justify-center mr-3">
+        <FontAwesome name="mortar-board" size={18} color="#004B8D" />
+      </View>
+      
+      {/* Content */}
+      <View className="flex-1">
+        <Text className="text-gray-800 font-semibold text-base" numberOfLines={1}>
+          {lecture.name}
+        </Text>
+        
+        {/* Topic badges - using BadgeList from existing code */}
+        {lecture.topic && lecture.topic.length > 0 && (
+          <View className="mt-1">
             <BadgeList list={lecture.topic} />
           </View>
-          {lecture.content ? (
-            <Text className="text-gray-200 text-sm mb-3" numberOfLines={3}>
-              {lecture.content}
-            </Text>
-          ) : null}
-          <View>
-            <TouchableOpacity className="bg-blue-600 px-4 py-2 rounded-lg self-start" activeOpacity={0.8}>
-              <Text className="text-white text-lg font-bold">Learn now</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ImageBackground>
+        )}
+      </View>
+      
+      {/* Right Icon */}
+      <View className="w-10 h-10 rounded-full bg-blue-50 items-center justify-center">
+        <AntDesign name="right" size={16} color="#004B8D" />
+      </View>
     </TouchableOpacity>
   );
 };

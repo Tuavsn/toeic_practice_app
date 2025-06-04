@@ -26,7 +26,7 @@ class ApiHandler {
   ): Promise<ApiResponse<T>> {
     Logger.info(`Base endpoint: ${url}`);
     Logger.info(`Executing ${method.toUpperCase()} request to ${url}`, { data });
-    
+
     try {
       const response = await axiosClient(url, {
         method,
@@ -34,19 +34,19 @@ class ApiHandler {
         params: options?.params,
         headers: options?.headers
       }) as ApiResponseStructure<T | PaginatedResponse<T>>;
-      
+
       Logger.debug(`${method.toUpperCase()} ${url} completed successfully`);
-      
+
       // Check if the response is paginated
-      const isPaginated = response.data && 
-                         typeof response.data === 'object' && 
-                         response.data !== null &&
-                         'meta' in response.data && 
-                         'result' in response.data;
-      
+      const isPaginated = response.data &&
+        typeof response.data === 'object' &&
+        response.data !== null &&
+        'meta' in response.data &&
+        'result' in response.data;
+
       if (isPaginated) {
         const paginatedData = response.data as PaginatedResponse<T>;
-        
+
         return {
           data: paginatedData.result as any,
           success: response.statusCode >= 200 && response.statusCode < 300,
@@ -55,7 +55,7 @@ class ApiHandler {
           meta: paginatedData.meta
         };
       }
-      
+
       // Regular response
       return {
         data: response.data as T,
@@ -66,7 +66,7 @@ class ApiHandler {
     } catch (error) {
       let errorMessage: string;
       let errorData: any;
-      
+
       if (error instanceof Error) {
         try {
           // Try to parse the error message as JSON
@@ -80,9 +80,9 @@ class ApiHandler {
         errorMessage = 'Lỗi không xác định';
         errorData = { message: errorMessage };
       }
-      
+
       Logger.error(`${method.toUpperCase()} ${url} failed: ${errorMessage}`, errorData);
-      
+
       return {
         data: null as any,
         success: false,
@@ -91,28 +91,28 @@ class ApiHandler {
       };
     }
   }
-  
+
   /**
    * Convenience method for GET requests
    */
   public async Get<T = any>(url: string, params?: Record<string, any>, options?: ApiOptions): Promise<ApiResponse<T>> {
     return this.Execute<T>(url, undefined, 'get', { ...options, params });
   }
-  
+
   /**
    * Convenience method for POST requests
    */
   public async Post<T = any>(url: string, data?: any, options?: ApiOptions): Promise<ApiResponse<T>> {
     return this.Execute<T>(url, data, 'post', options);
   }
-  
+
   /**
    * Convenience method for PUT requests
    */
   public async Put<T = any>(url: string, data?: any, options?: ApiOptions): Promise<ApiResponse<T>> {
     return this.Execute<T>(url, data, 'put', options);
   }
-  
+
   /**
    * Convenience method for DELETE requests
    */

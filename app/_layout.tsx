@@ -14,7 +14,7 @@ import { QuestionsProvider } from '@/context/QuestionContext';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  
+
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -34,131 +34,149 @@ export default function RootLayout() {
       <AuthProvider>
         <QuestionsProvider>
           <AudioManagerProvider>
-            <StatusBar barStyle="light-content" backgroundColor="#004B8D" />
+            <StatusBar barStyle="dark-content" />
             {/* <GlobalAudioController /> */}
             <Stack>
-              <Stack.Screen name='index' options={{ headerShown: false }}/>
-              <Stack.Screen name='welcome-intro' options={{ headerShown: false }}/>
-              <Stack.Screen name='(auth)/profile' options={{
-                title: "Profile",
-                headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
-              />
+              <Stack.Screen name='index' options={{ headerShown: false }} />
+              {/* Plash screen */}
+              <Stack.Screen name='welcome-intro' options={{ headerShown: false }} />
+              {/* Lecture List Screen */}
               <Stack.Screen name='(main)/course' options={{
                 title: "Grammar",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/lecture'  options={{
+              {/* Lecture Detail Screen */}
+              <Stack.Screen name='(main)/lecture' options={{
                 title: "Lecture",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/testCategoryList'  options={{
+              {/* Test Category List Screen */}
+              <Stack.Screen name='(main)/testCategoryList' options={{
                 title: "Test Category List",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/testList'  options={{
+              {/* Test List Screen */}
+              <Stack.Screen name='(main)/testList' options={{
                 title: "Test List",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/test'  options={{
+              {/* Test Information Screen */}
+              <Stack.Screen name='(main)/testInfo' options={{
+                title: "Test Information",
+                headerTitleAlign: 'center',
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
+              />
+              {/* Test Detail Screen */}
+              <Stack.Screen name='(main)/test' options={{
                 title: "Test",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/practiceList'  options={{
+              {/* Practice List Screen */}
+              <Stack.Screen name='(main)/practiceList' options={{
                 title: "Practice List",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/practice'  options={{
+              {/* Practice Detail Screen */}
+              <Stack.Screen name='(main)/practice' options={{
                 title: "Practice",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/vocabulary'  options={{
+              {/* Vocabulary Screen */}
+              <Stack.Screen name='(main)/vocabulary' options={{
                 title: "Vocabulary",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/deskDetail'  options={{
+              {/* FlashCard Desk Screen */}
+              <Stack.Screen name='(main)/deskDetail' options={{
                 title: "Vocabulary",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/flashcardDesk'  options={{
+              {/* FlashCard Screen */}
+              <Stack.Screen name='(main)/flashcardDesk' options={{
                 title: "Flash Card Deck",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/flashCard'  options={{
+              {/* User FlashCard Collections Screen */}
+              <Stack.Screen name='(main)/flashCard' options={{
                 title: "Flash Card",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/dictionary'  options={{
+              {/* Dictionary Screen */}
+              <Stack.Screen name='(main)/dictionary' options={{
                 title: "Dictionary",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/result'  options={{
+              {/* Test Result Screen */}
+              <Stack.Screen name='(main)/result' options={{
                 title: "Test Result",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/search'  options={{
+              {/* Search Screen */}
+              <Stack.Screen name='(main)/search' options={{
                 title: "Search",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(main)/notify'  options={{
-                title: "Notify",
-                headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
-              />
-              <Stack.Screen name='(auth)/login'  options={{
+              {/* Login Screen */}
+              <Stack.Screen name='(auth)/login' options={{
                 title: "Login",
                 headerTitleAlign: 'center',
-                headerStyle: {backgroundColor: '#004B8D'},
-                headerTitleStyle: {fontWeight: 'bold'},
-                headerTintColor: 'white'}}
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
               />
-              <Stack.Screen name='(drawer)'  options={{ headerShown: false }}/>
+              {/* Notify Screen */}
+              <Stack.Screen name='(main)/notify' options={{
+                title: "Notify",
+                headerTitleAlign: 'center',
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
+              />
+              <Stack.Screen name='(drawer)' options={{ headerShown: false }} />
             </Stack>
           </AudioManagerProvider>
         </QuestionsProvider>

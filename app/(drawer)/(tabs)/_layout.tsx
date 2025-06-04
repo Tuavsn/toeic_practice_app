@@ -17,9 +17,9 @@ export default function TabsLayout() {
               case "index":
                 iconName = "home";
                 break;
-                case "flashcard/index":
-                    iconName = "book";
-                    break;
+              case "flashcard/index":
+                iconName = "book";
+                break;
               case "statistic/index":
                 iconName = "bar-chart";
                 break;

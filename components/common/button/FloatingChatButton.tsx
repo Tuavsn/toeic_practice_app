@@ -18,17 +18,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ChatMessage {
-    sender: 'user' | 'bot';
-    text: string;
+  sender: 'user' | 'bot';
+  text: string;
 }
 
 interface FloatingChatButtonProps {
-    questionId: string;
-    // Optional callback to be notified when the modal opens/closes
-    onModalStateChange?: (isOpen: boolean) => void;
+  questionId: string;
+  onModalStateChange?: (isOpen: boolean) => void;
 }
 
-// Import functions to match your web version
 import chatService from '@/services/chat.service';
 
 const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onModalStateChange }) => {
@@ -39,13 +37,11 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const listRef = useRef<FlatList>(null);
-  
-  // Animation for the floating button
+
   const scale = useRef(new Animated.Value(1)).current;
   const buttonPosition = useRef(new Animated.Value(0)).current;
   const keyboardVisible = useRef(false);
 
-  // Listen for keyboard events to adjust button position
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
@@ -58,7 +54,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
         }).start();
       }
     );
-    
+
     const keyboardWillHide = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       () => {
@@ -77,7 +73,6 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
     };
   }, []);
 
-  // Check for existing session
   useEffect(() => {
     const checkStoredSession = async () => {
       try {
@@ -87,14 +82,12 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
           if (sessionData.expiry > Date.now()) {
             setSessionId(sessionData.id);
             setIsInitiated(true);
-            
-            // If we have stored messages, restore them
+
             const storedMessages = await AsyncStorage.getItem(`chat_messages_${questionId}`);
             if (storedMessages) {
               setMessageLogs(JSON.parse(storedMessages));
             }
           } else {
-            // Clear expired session
             await AsyncStorage.removeItem(`chat_session_${questionId}`);
             await AsyncStorage.removeItem(`chat_messages_${questionId}`);
           }
@@ -105,7 +98,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
         await AsyncStorage.removeItem(`chat_messages_${questionId}`);
       }
     };
-    
+
     if (modalVisible) {
       checkStoredSession();
     }
@@ -118,7 +111,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
         await AsyncStorage.setItem(`chat_messages_${questionId}`, JSON.stringify(messageLogs));
       }
     };
-    
+
     storeMessages();
   }, [messageLogs, questionId]);
 
@@ -143,7 +136,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
         useNativeDriver: true,
       }),
     ]).start();
-    
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setModalVisible(true);
   };
@@ -154,21 +147,21 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
 
   const startChat = async () => {
     setIsLoading(true);
-    
+
     try {
       const response = await chatService.startChat(questionId);
-      
+
       if (response && response.data) {
         const { sessionId, chatResponse } = response.data;
         const assistantMessage = chatResponse.choices[0].message.content;
-        
+
         // Store session ID with 24-hour expiry
         const expiryTime = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
         await AsyncStorage.setItem(
           `chat_session_${questionId}`,
           JSON.stringify({ id: sessionId, expiry: expiryTime })
         );
-        
+
         setSessionId(sessionId);
         setIsInitiated(true);
         setMessageLogs([{ sender: "bot", text: assistantMessage }]);
@@ -192,17 +185,17 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
 
   const sendMessage = async (message: string) => {
     if (!message.trim() || !sessionId) return;
-    
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setIsLoading(true);
-    
+
     const newMessageLogs: ChatMessage[] = [...messageLogs, { sender: "user", text: message }];
     setMessageLogs(newMessageLogs);
     setInput('');
-    
+
     try {
       const response = await chatService.continueChat(questionId, sessionId, message);
-      
+
       if (response && response.data) {
         const assistantMessage = response.data.chatResponse.choices[0].message.content;
         setMessageLogs([...newMessageLogs, { sender: "bot", text: assistantMessage }]);
@@ -244,7 +237,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
 
   return (
     <>
-      <Animated.View 
+      <Animated.View
         style={{
           position: 'absolute',
           bottom: 150,
@@ -303,22 +296,19 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
                 className="flex-1 p-4"
                 keyExtractor={(_, index) => index.toString()}
                 renderItem={({ item }) => (
-                  <View 
-                    className={`mb-3 flex-row ${
-                      item.sender === 'user' ? 'justify-end' : 'justify-start'
-                    }`}
-                  >
-                    <View 
-                      className={`p-3 rounded-2xl max-w-4/5 ${
-                        item.sender === 'user' 
-                          ? 'bg-blue-500 rounded-tr-none' 
-                          : 'bg-gray-200 rounded-tl-none'
+                  <View
+                    className={`mb-3 flex-row ${item.sender === 'user' ? 'justify-end' : 'justify-start'
                       }`}
-                    >
-                      <Text 
-                        className={`${
-                          item.sender === 'user' ? 'text-white' : 'text-gray-800'
+                  >
+                    <View
+                      className={`p-3 rounded-2xl max-w-4/5 ${item.sender === 'user'
+                          ? 'bg-blue-500 rounded-tr-none'
+                          : 'bg-gray-200 rounded-tl-none'
                         }`}
+                    >
+                      <Text
+                        className={`${item.sender === 'user' ? 'text-white' : 'text-gray-800'
+                          }`}
                       >
                         {item.text}
                       </Text>
@@ -380,9 +370,9 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
                       disabled={!input.trim() || isLoading}
                       className={`ml-2 ${!input.trim() || isLoading ? 'opacity-50' : ''}`}
                     >
-                      <Ionicons 
-                        name="send" 
-                        size={24} 
+                      <Ionicons
+                        name="send"
+                        size={24}
                         color="#3B82F6"
                       />
                     </TouchableOpacity>

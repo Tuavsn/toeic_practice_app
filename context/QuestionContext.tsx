@@ -29,8 +29,8 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
   const [questions, setQuestionsState] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  const currentQuestion = questions.length > 0 && currentIndex < questions.length 
-    ? questions[currentIndex] 
+  const currentQuestion = questions.length > 0 && currentIndex < questions.length
+    ? questions[currentIndex]
     : null;
 
   const setQuestions = (newQuestions: Question[]) => {
@@ -40,13 +40,28 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
 
   const goToNextQuestion = () => {
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      // Check if current question has subquestions
+      if (currentQuestion?.subQuestions && currentQuestion.subQuestions.length > 0) {
+        // Skip over subquestions by adding their length to the current index
+        setCurrentIndex(currentIndex + currentQuestion.subQuestions.length);
+      } else {
+        // Normal increment if no subquestions
+        setCurrentIndex(currentIndex + 1);
+      }
     }
   };
 
   const goToPreviousQuestion = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+      // Check if previous question has subquestions
+      const prevIndex = currentIndex - 1;
+      if (prevIndex >= 0 && questions[prevIndex]?.subQuestions && questions[prevIndex].subQuestions.length > 0) {
+        // Skip over subquestions by subtracting their length from the current index
+        setCurrentIndex(currentIndex - questions[prevIndex].subQuestions.length);
+      } else {
+        // Normal decrement if no subquestions
+        setCurrentIndex(currentIndex - 1);
+      }
     }
   };
 

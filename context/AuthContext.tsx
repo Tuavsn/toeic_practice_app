@@ -2,19 +2,18 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '@/types/global.type';
 import { Alert } from 'react-native';
-  
+
 interface AuthContextType {
-    user: User | null;
-    loading: boolean;
-    toggleLoading: () => void;
-    login: (userInfo: User) => Promise<void>;
-    logout: () => Promise<void>;
+  user: User | null;
+  loading: boolean;
+  toggleLoading: () => void;
+  login: (userInfo: User) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 interface AuthProviderProps {
-    children: ReactNode;
+  children: ReactNode;
 }
-  
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

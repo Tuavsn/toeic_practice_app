@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Loader from "@/components/Loader";
-import useAuth from "@/hooks/auth/useAuth";
+import useAuth from "@/hooks/useAuth";
 import categoryService from "@/services/category.service";
 import { Category } from "@/types/global.type";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -99,7 +98,7 @@ export default function TestCategoryListScreen() {
         source={require('@/assets/animations/reading.json')}
         autoPlay
         loop
-        style={{ width: 180, height: 180 }}
+        style={{ width: 120, height: 120 }}
       />
       <Text className="text-xl font-bold text-gray-800 mt-4 mb-2">
         No Categories Available
@@ -111,20 +110,34 @@ export default function TestCategoryListScreen() {
   );
 
   const renderHeader = () => (
-    <View className="mb-6 pb-4 border-b border-gray-200">
-      <Text className="text-2xl font-bold text-blue-900 mb-1">
-        Test Categories
-      </Text>
-      <Text className="text-base text-gray-600">
-        Select a category to browse available tests
-      </Text>
+    <View className="mb-6 p-5 bg-[#004B8D] rounded-lg shadow-lg">
+        {/* Overlay */}
+        <View className="absolute inset-0 bg-black opacity-20" />
+        <View className="relative">
+            <Text className="text-2xl font-bold text-white">
+                Test Categories
+            </Text>
+            <Text className="text-sm text-white mt-2">
+                Select a category to browse available tests
+            </Text>
+        </View>
     </View>
   );
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       {loading ? (
-        <Loader loadingText="Đang tải danh mục" />
+        <View className="items-center justify-center py-8">
+          <LottieView
+            source={require('@/assets/animations/loading.json')}
+            autoPlay
+            loop
+            style={{ width: 120, height: 120 }}
+          />
+          <Text className="text-sm text-gray-500 mt-2">
+            Loading categories...
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={categories}

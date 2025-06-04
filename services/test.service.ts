@@ -1,5 +1,5 @@
 import { API_ENDPOINTS } from "@/constants/api";
-import { ApiResponse, PaginationMeta, Question, Test } from "@/types/global.type";
+import { ApiResponse, PaginationMeta, Question, Test, TestInfo } from "@/types/global.type";
 import { SubmitRequest, User } from "@/types/global.type";
 import ApiHandler from "@/utils/ApiHandler";
 import Logger from "@/utils/Logger";
@@ -20,6 +20,7 @@ interface TestQuestions {
     totalQuestion: number;
     listMultipleChoiceQuestions: Question[];
 }
+
 
 /**
  * Service for handling test-related API operations
@@ -58,6 +59,28 @@ class TestService {
       return response;
     } catch (error) {
       Logger.error('Error in getAllTests:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch detailed information about a specific test
+   */
+  async getTestInfo(testId: string): Promise<ApiResponse<TestInfo>> {
+    Logger.info(`Fetching test info for test ID: ${testId}`);
+
+    try {
+      const response = await ApiHandler.Get<TestInfo>(
+        `${API_ENDPOINTS.TESTS}/${testId}/info`
+      );
+
+      Logger.debug(
+        `Got response for test info: success=${response.success}`
+      );
+
+      return response;
+    } catch (error) {
+      Logger.error(`Error in getTestInfo (${testId}):`, error);
       throw error;
     }
   }

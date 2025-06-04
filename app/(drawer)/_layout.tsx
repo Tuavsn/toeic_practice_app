@@ -4,24 +4,24 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Drawer } from "expo-router/drawer";
 import { Image, Text, View } from 'react-native';
 import { AntDesign, FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import useAuth from '@/hooks/auth/useAuth';
+import useAuth from '@/hooks/useAuth';
 
 const DrawerContent = () => {
 
   const { user, logout } = useAuth()
-  
+
   return (
     <DrawerContentScrollView>
       <View className='flex-1 flex-row gap-4 items-center p-2'>
         {
           user ? (
-              <Image
-                  width={70}
-                  height={70}
-                  source={{uri: user.avatar}}
-              />
+            <Image
+              width={70}
+              height={70}
+              source={{ uri: user.avatar }}
+            />
           ) : (
-              <FontAwesome name="user-circle" size={60} color="#637794" />
+            <FontAwesome name="user-circle" size={60} color="#637794" />
           )
         }
         <View>
@@ -34,21 +34,6 @@ const DrawerContent = () => {
       {user ? (
         <View className='flex-1 gap-2'>
           <DrawerItem
-            icon={({ color, size }) => (
-              <AntDesign
-                name="user"
-                size={size}
-                color="white"
-              />
-            )}
-            label={"Profile"}
-            labelStyle={{color: "white"}}
-            style={{ backgroundColor: "#004B8D", elevation: 5}}
-            onPress={() => {
-              router.push("/(auth)/profile");
-            }}
-          />
-          <DrawerItem
             icon={({ color, size }) =>
               <MaterialIcons
                 name="logout"
@@ -58,9 +43,9 @@ const DrawerContent = () => {
             }
             label={"Đăng xuất"}
             labelStyle={[
-              { color: "white"},
+              { color: "white" },
             ]}
-            style={{ backgroundColor: "#004B8D", elevation: 5}}
+            style={{ backgroundColor: "#004B8D", elevation: 5 }}
             onPress={() => logout()}
           />
         </View>
@@ -75,9 +60,9 @@ const DrawerContent = () => {
           }
           label={"Đăng nhập"}
           labelStyle={[
-            { color: "white"},
+            { color: "white" },
           ]}
-          style={{ backgroundColor: "#004B8D", elevation: 5}}
+          style={{ backgroundColor: "#004B8D", elevation: 5 }}
           onPress={() => {
             router.push("/(auth)/login");
           }}
@@ -92,6 +77,6 @@ export default function DrawersLayout() {
   const nav = useNavigation()
 
   return (
-    <Drawer drawerContent={() => <DrawerContent />} screenOptions={{headerShown: false}} />
+    <Drawer drawerContent={() => <DrawerContent />} screenOptions={{ headerShown: false }} />
   );
 }

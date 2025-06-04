@@ -11,95 +11,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Database from '@/database/Database';
 import { Card } from '@/types/global.type';
-import { Animated as AnimatedType } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AntDesign, Ionicons } from '@expo/vector-icons'; // Import Expo icons
+import { AntDesign, Ionicons } from '@expo/vector-icons';
+import FlashCard from '@/components/common/card/FlashCard';
 
 interface FlashCardDeckScreenProps {
   deckId: number;
   title: string;
 }
-
-interface EnhancedFlashCardProps {
-  frontText: string;
-  backText: string;
-  flipped: boolean;
-  onFlip: () => void;
-}
-
-// Enhanced FlashCard component with smoother animations
-const EnhancedFlashCard: React.FC<EnhancedFlashCardProps> = ({ frontText, backText, flipped, onFlip }) => {
-  const flipAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.spring(flipAnim, {
-      toValue: flipped ? 180 : 0,
-      friction: 8,
-      tension: 10,
-      useNativeDriver: true,
-    }).start();
-  }, [flipped]);
-
-  const frontAnimatedStyle: { transform: any[] } = {
-    transform: [
-      { perspective: 1000 },
-      {
-        rotateY: flipAnim.interpolate({
-          inputRange: [0, 180],
-          outputRange: ['0deg', '180deg'],
-        }),
-      },
-    ],
-  };
-
-  const backAnimatedStyle: { transform: any[] } = {
-    transform: [
-      { perspective: 1000 },
-      {
-        rotateY: flipAnim.interpolate({
-          inputRange: [0, 180],
-          outputRange: ['180deg', '360deg'],
-        }),
-      },
-    ],
-  };
-
-  const frontOpacity: AnimatedType.AnimatedInterpolation<number> = flipAnim.interpolate({
-    inputRange: [89, 90],
-    outputRange: [1, 0],
-  });
-
-  const backOpacity: AnimatedType.AnimatedInterpolation<number> = flipAnim.interpolate({
-    inputRange: [89, 90],
-    outputRange: [0, 1],
-  });
-
-  return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      className="w-full h-full"
-      onPress={onFlip}
-    >
-      <View className="w-full h-full relative">
-        <Animated.View
-          className="absolute w-full h-full bg-white rounded-xl shadow-md p-6 justify-center items-center"
-          style={[frontAnimatedStyle, { opacity: frontOpacity, backfaceVisibility: 'hidden' }]}
-        >
-          <Text className="text-2xl font-bold text-center text-gray-800">{frontText}</Text>
-          <Text className="text-sm text-gray-500 mt-4 text-center">Nhấn để xem nghĩa</Text>
-        </Animated.View>
-
-        <Animated.View
-          className="absolute w-full h-full bg-blue-50 rounded-xl shadow-md p-6 justify-center items-center"
-          style={[backAnimatedStyle, { opacity: backOpacity, backfaceVisibility: 'hidden' }]}
-        >
-          <Text className="text-xl text-center text-gray-800">{backText}</Text>
-          <Text className="text-sm text-gray-500 mt-4 text-center">Nhấn để xem từ</Text>
-        </Animated.View>
-      </View>
-    </TouchableOpacity>
-  );
-};
 
 const FlashCardDeckScreen = ({ deckId, title }: FlashCardDeckScreenProps) => {
   const router = useRouter();
@@ -111,7 +30,7 @@ const FlashCardDeckScreen = ({ deckId, title }: FlashCardDeckScreenProps) => {
 
   // Get screen dimensions to prevent overflow
   const { width, height } = Dimensions.get('window');
-  const cardHeight: number = Math.min(height * 0.45, 400); // Limit card height to 45% of screen height or 400px
+  const cardHeight: number = Math.min(height * 0.45, 400);
 
   // Animation refs for card transitions
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -132,7 +51,7 @@ const FlashCardDeckScreen = ({ deckId, title }: FlashCardDeckScreenProps) => {
       const cardsData = await dbInstance.getCardsByDeckId(deckId);
 
       if (cardsData.length === 0) {
-        setError('Không có thẻ từ vựng nào trong bộ này');
+        setError('No flashcards in this deck');
         setLoading(false);
         return;
       }
@@ -143,7 +62,7 @@ const FlashCardDeckScreen = ({ deckId, title }: FlashCardDeckScreenProps) => {
       setLoading(false);
     } catch (err) {
       console.error('Error loading cards:', err);
-      setError('Không thể tải thẻ từ vựng. Vui lòng thử lại sau.');
+      setError('Unable to load flashcards. Please try again later.');
       setLoading(false);
     }
   };
@@ -201,18 +120,18 @@ const FlashCardDeckScreen = ({ deckId, title }: FlashCardDeckScreenProps) => {
     } else {
       // Completed all cards
       Alert.alert(
-        'Hoàn thành',
-        'Bạn đã học hết tất cả các thẻ từ vựng.',
+        'Completed',
+        'You have studied all flashcards.',
         [
           {
-            text: 'Học lại',
+            text: 'Study Again',
             onPress: () => {
               setCurrentCardIndex(0);
               setFlipped(false);
             }
           },
           {
-            text: 'Quay lại',
+            text: 'Go Back',
             onPress: () => router.back(),
             style: 'cancel'
           },
@@ -246,7 +165,7 @@ const FlashCardDeckScreen = ({ deckId, title }: FlashCardDeckScreenProps) => {
             className="mt-4 bg-blue-500 py-2 px-4 rounded-lg"
             onPress={() => router.back()}
           >
-            <Text className="text-white font-medium">Quay lại</Text>
+            <Text className="text-white font-medium">Go Back</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -259,7 +178,7 @@ const FlashCardDeckScreen = ({ deckId, title }: FlashCardDeckScreenProps) => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <View className="flex-1 p-4">
-        {/* Các nút điều hướng */}
+        {/* Navigation buttons */}
         <View className="flex-row justify-between mb-4 px-2">
           <TouchableOpacity
             className="w-14 h-14 justify-center items-center rounded-full bg-gray-200"
@@ -291,16 +210,16 @@ const FlashCardDeckScreen = ({ deckId, title }: FlashCardDeckScreenProps) => {
           </TouchableOpacity>
         </View>
 
-        {/* Thông tin tiến độ và tiêu đề */}
+        {/* Progress info and title */}
         <View className="flex-row justify-between items-center mb-4">
           <Text className="text-sm text-gray-500">{progress}</Text>
           <Text className="text-lg font-bold text-gray-900" numberOfLines={1} ellipsizeMode="tail">
             {title}
           </Text>
-          <View className="w-12"></View> {/* Placeholder for alignment */}
+          <View className="w-12"></View>
         </View>
 
-        {/* Thẻ flashcard */}
+        {/* Flashcard Container */}
         <View className="flex-1 justify-start px-2">
           <Animated.View
             className="w-full h-[70%]"
@@ -309,7 +228,7 @@ const FlashCardDeckScreen = ({ deckId, title }: FlashCardDeckScreenProps) => {
               transform: [{ translateX: slideAnim }]
             }}
           >
-            <EnhancedFlashCard
+            <FlashCard
               frontText={currentCard.front_text}
               backText={currentCard.back_text}
               flipped={flipped}

@@ -8,16 +8,16 @@ import {
   Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Database from '../database/Database';
+import Database from '../../database/Database';
 import FlashCardService from '@/services/flashcard.service';
 import { Card, Deck } from '@/types/global.type';
 import { useRouter } from 'expo-router';
 
-interface DeskDetailScreenProps {
+interface DeckDetailScreenProps {
     deckId: number;
 }
 
-const DeckDetailScreen = ({deckId}: DeskDetailScreenProps) => {
+const DeckDetailScreen = ({ deckId }: DeckDetailScreenProps) => {
   const [deck, setDeck] = useState<Deck | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -38,7 +38,7 @@ const DeckDetailScreen = ({deckId}: DeskDetailScreenProps) => {
       // Get deck information
       const deckData = await dbInstance.getDeckById(deckId);
       if (!deckData) {
-        setError('Không tìm thấy bộ từ vựng');
+        setError('Vocabulary deck not found');
         setLoading(false);
         return;
       }
@@ -56,7 +56,7 @@ const DeckDetailScreen = ({deckId}: DeskDetailScreenProps) => {
       setLoading(false);
     } catch (err) {
       console.error('Error loading deck details:', err);
-      setError('Không thể tải thông tin bộ từ vựng. Vui lòng thử lại sau.');
+      setError('Unable to load vocabulary deck information. Please try again later.');
       setLoading(false);
     }
   };
@@ -66,15 +66,15 @@ const DeckDetailScreen = ({deckId}: DeskDetailScreenProps) => {
       if (isSaved) {
         await FlashCardService.removeSavedDeck(deckId);
         setIsSaved(false);
-        Alert.alert('Thông báo', 'Đã xóa bộ từ vựng khỏi danh sách');
+        Alert.alert('Notice', 'Deck removed from saved list');
       } else {
         await FlashCardService.saveDeckId(deckId);
         setIsSaved(true);
-        Alert.alert('Thông báo', 'Đã thêm bộ từ vựng vào danh sách');
+        Alert.alert('Notice', 'Deck added to saved list');
       }
     } catch (err) {
       console.error('Error saving/removing deck:', err);
-      Alert.alert('Lỗi', 'Không thể lưu/xóa bộ từ vựng');
+      Alert.alert('Error', 'Unable to save/remove deck');
     }
   };
 
@@ -114,7 +114,7 @@ const DeckDetailScreen = ({deckId}: DeskDetailScreenProps) => {
         <View className="flex-row mt-2.5">
           <View className="mr-5">
             <Text className="text-lg font-bold text-blue-500">{cards.length}</Text>
-            <Text className="text-sm text-gray-500">Thẻ từ vựng</Text>
+            <Text className="text-sm text-gray-500">Cards</Text>
           </View>
         </View>
       </View>
@@ -124,7 +124,7 @@ const DeckDetailScreen = ({deckId}: DeskDetailScreenProps) => {
           className="flex-1 py-3 rounded-lg items-center mx-1 bg-blue-500"
           onPress={handleStartLearning}
         >
-          <Text className="text-white font-bold text-base">Học ngay</Text>
+          <Text className="text-white font-bold text-base">Learn Now</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -132,13 +132,13 @@ const DeckDetailScreen = ({deckId}: DeskDetailScreenProps) => {
           onPress={handleSaveDeck}
         >
           <Text className="text-white font-bold text-base">
-            {isSaved ? 'Đã lưu' : 'Lưu bộ từ vựng'}
+            {isSaved ? 'Saved' : 'Save Deck'}
           </Text>
         </TouchableOpacity>
       </View>
 
       <View className="flex-1 p-4 mb-6">
-        <Text className="text-lg font-bold mb-4 text-gray-900">Danh sách thẻ từ vựng</Text>
+        <Text className="text-lg font-bold mb-4 text-gray-900">Vocabulary Cards List</Text>
         
         <FlatList
           data={cards}
@@ -157,7 +157,7 @@ const DeckDetailScreen = ({deckId}: DeskDetailScreenProps) => {
           contentContainerStyle={{ paddingBottom: 20 }}
           ListEmptyComponent={
             <View className="p-5 items-center">
-              <Text className="text-base text-gray-500 text-center">Không có thẻ từ vựng nào</Text>
+              <Text className="text-base text-gray-500 text-center">No vocabulary cards available</Text>
             </View>
           }
         />

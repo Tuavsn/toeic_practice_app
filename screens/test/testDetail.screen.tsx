@@ -12,6 +12,7 @@ import testService from "@/services/test.service";
 import questionService from "@/services/question.service";
 import { AnswerPair } from "@/types/global.type";
 import FloatingChatButton from "@/components/common/button/FloatingChatButton";
+import FloatingDictionary from "@/components/common/button/FloatingDictionary";
 
 export default function TestDetailScreen() {
   const { partNum, questionId, testId } = useLocalSearchParams();
@@ -29,7 +30,7 @@ export default function TestDetailScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [submittedAnswers, setSubmittedAnswers] = useState<Record<string, string>>({});
-  const [loadingText, setLoadingText] = useState("Đang tải bài thi");
+  const [loadingText, setLoadingText] = useState("Loading test");
   const [questionsModalVisible, setQuestionsModalVisible] = useState(false);
 
   // Initialize submittedAnswers with empty strings for all questions when questions are loaded
@@ -154,16 +155,16 @@ export default function TestDetailScreen() {
     if (answeredCount < totalQuestions) {
       // Show confirmation alert if not all questions are answered
       Alert.alert(
-        "Chưa hoàn thành",
-        `Bạn mới hoàn thành ${answeredCount}/${totalQuestions} câu hỏi. Bạn có chắc chắn muốn nộp bài?`,
+        "Incomplete",
+        `You have completed ${answeredCount}/${totalQuestions} questions. Are you sure you want to submit the test?`,
         [
           {
-            text: "Xem câu chưa hoàn thành",
+            text: "View unanswered questions",
             onPress: () => setQuestionsModalVisible(true),
             style: "cancel"
           },
           {
-            text: "Nộp bài",
+            text: "Submit",
             onPress: () => processSubmitTest()
           }
         ]
@@ -176,7 +177,7 @@ export default function TestDetailScreen() {
   
   const processSubmitTest = async () => {
     console.log("Submitting test:", { testId });
-    setLoadingText("Đang chấm bài");
+    setLoadingText("Grading test");
     setLoading(true);
     
     try {
@@ -212,7 +213,7 @@ export default function TestDetailScreen() {
         testId, 
         userAnswer: answers,
         parts: '1234567',
-        type: 'practice',
+        type: 'fulltest',
         totalSeconds: 0
       }, null, 2));
 
@@ -222,12 +223,12 @@ export default function TestDetailScreen() {
         testId: testId as string,
         totalSeconds: 0,
         parts: '1234567',
-        type: 'practice'
+        type: 'fulltest'
       });
 
       // Check for successful response
       if (submitResponse.success) {
-        Alert.alert("Thành công", "Nộp bài thành công");
+        Alert.alert("Success", "Test submitted successfully");
         
         const resultData = submitResponse.data;
         
@@ -237,14 +238,14 @@ export default function TestDetailScreen() {
           params: { resultId: resultData.resultId },
         });
       } else {
-        throw new Error(submitResponse.message || "Lỗi không xác định");
+        throw new Error(submitResponse.message || "Unknown error");
       }
     } catch (err) {
       console.error('Error submitting test:', err);
-      Alert.alert("Lỗi", `Có lỗi xảy ra khi nộp bài: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      Alert.alert("Error", `An error occurred while submitting the test: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
-      setLoadingText("Đang tải bài thi");
+      setLoadingText("Loading test");
     }
   };
 
@@ -331,8 +332,8 @@ export default function TestDetailScreen() {
 
   // Calculate completion percentage - consider only non-empty answers
   const answeredCount = Object.values(submittedAnswers).filter(answer => answer !== "").length;
-  const totalQuestions = questions.length;
-  const progressPercentage = (answeredCount / totalQuestions) * 100;
+  const totalQuestions = 200;
+  const progressPercentage = (answeredCount / 200) * 100;
 
   // Get filtered answers for the current question only
   const currentQuestionAnswers = getFilteredAnswersForCurrentQuestion();
@@ -362,7 +363,7 @@ export default function TestDetailScreen() {
               <View className="flex-row items-center">
                 <Ionicons name="document-text-outline" size={16} color="#4B5563" />
                 <Text className="ml-1 text-gray-600">
-                  Question {currentIndex + 1} of {questions.length}
+                  Question {currentIndex + 1} of 200
                 </Text>
               </View>
               <Text className="text-gray-500">Part {currentQuestion.partNum}</Text>
@@ -448,7 +449,7 @@ export default function TestDetailScreen() {
           <SafeAreaView className="flex-1 justify-center items-center bg-black bg-opacity-50">
             <View className="bg-white rounded-xl w-11/12 max-h-5/6 p-4">
               <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-lg font-bold text-gray-800">Danh sách câu hỏi</Text>
+                <Text className="text-lg font-bold text-gray-800">Questions List</Text>
                 <TouchableOpacity onPress={() => setQuestionsModalVisible(false)}>
                   <Ionicons name="close" size={24} color="#4B5563" />
                 </TouchableOpacity>
@@ -456,7 +457,7 @@ export default function TestDetailScreen() {
               
               <View className="mb-4 bg-gray-100 p-3 rounded-lg">
                 <View className="flex-row justify-between mb-2">
-                  <Text className="text-gray-700">Đã hoàn thành:</Text>
+                  <Text className="text-gray-700">Completed:</Text>
                   <Text className="font-medium text-blue-600">{answeredCount}/{totalQuestions}</Text>
                 </View>
                 <View className="h-2 bg-gray-200 rounded-full">
@@ -500,12 +501,12 @@ export default function TestDetailScreen() {
                           {isAnswered ? (
                             <View className="flex-row items-center">
                               <Ionicons name="checkmark-circle" size={14} color="#10B981" />
-                              <Text className="text-xs text-green-600 ml-1">Đã trả lời</Text>
+                              <Text className="text-xs text-green-600 ml-1">Answered</Text>
                             </View>
                           ) : (
                             <View className="flex-row items-center">
                               <Ionicons name="alert-circle" size={14} color="#F59E0B" />
-                              <Text className="text-xs text-amber-600 ml-1">Chưa trả lời</Text>
+                              <Text className="text-xs text-amber-600 ml-1">Not answered</Text>
                             </View>
                           )}
                         </View>
@@ -524,7 +525,7 @@ export default function TestDetailScreen() {
                 onPress={() => setQuestionsModalVisible(false)}
                 className="py-3 bg-blue-600 rounded-lg items-center mt-auto"
               >
-                <Text className="text-white font-medium">Quay lại bài thi</Text>
+                <Text className="text-white font-medium">Return to test</Text>
               </TouchableOpacity>
             </View>
           </SafeAreaView>
@@ -534,6 +535,8 @@ export default function TestDetailScreen() {
       {currentQuestion?.id ? (
         <FloatingChatButton questionId={currentQuestion.id} />
       ) : null}
+      {/* Floating dictionary */}
+        <FloatingDictionary />
     </SafeAreaView>
   );
 }

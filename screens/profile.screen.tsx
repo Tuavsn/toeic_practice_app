@@ -71,8 +71,8 @@ export default function ProfileScreen() {
       >
         {/* Avatar */}
         <Image
-            source={{ uri: profile.avatar }}
-            className="w-28 h-28 rounded-full border-4 border-white"
+          source={{ uri: profile.avatar }}
+          className="w-28 h-28 rounded-full border-4 border-white"
         />
       </View>
 
@@ -88,15 +88,15 @@ export default function ProfileScreen() {
       >
         {/* Email */}
         <Text className="text-xl text-[#004B8D] font-bold">
-            Email: {profile.email}
+          Email: {profile.email}
         </Text>
 
         {/* Role */}
         <Text className="text-lg text-[#004B8D] mt-4 font-medium">
-            Role: {profile.role.name}
+          Role: {profile.role.name}
         </Text>
         <Text className="text-sm text-gray-600 mt-2">
-            {profile.role.description}
+          {profile.role.description}
         </Text>
       </View>
     </SafeAreaView>

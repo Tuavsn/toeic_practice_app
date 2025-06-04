@@ -23,12 +23,12 @@ interface ResultDetail {
 export default function QuestionDetailScreen() {
   const { partNum, questionId } = useLocalSearchParams();
   const navigation = useNavigation();
-  const { 
-    currentQuestion, 
-    currentIndex, 
-    questions, 
+  const {
+    currentQuestion,
+    currentIndex,
+    questions,
     setQuestions,
-    goToNextQuestion, 
+    goToNextQuestion,
     goToPreviousQuestion,
     setCurrentQuestionIndex
   } = useQuestions();
@@ -69,16 +69,16 @@ export default function QuestionDetailScreen() {
   const fetchAllQuestions = async (partNumber: string) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await questionService.getAllQuestions({
         pageSize: 999, // Fetch all questions at once
         partNum: partNumber,
         current: 1,
       });
-      
+
       setQuestions(response.data);
-      
+
       // If a specific question ID was provided, set it as current
       if (questionId && response.data.length > 0) {
         const index = response.data.findIndex(q => q.id === questionId);
@@ -101,9 +101,9 @@ export default function QuestionDetailScreen() {
 
   const handleAnswerSelection = async (qid: string, answer: string) => {
     if (!currentQuestion) return;
-    
+
     let details: ResultDetail[] = [];
-    
+
     if (currentQuestion.subQuestions && currentQuestion.subQuestions.length) {
       // For questions with subquestions
       details = currentQuestion.subQuestions.map(subQ => {
@@ -126,7 +126,7 @@ export default function QuestionDetailScreen() {
         explanation: currentQuestion.explanation || "No explanation provided.",
       }];
     }
-    
+
     setResultDetails(details);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
@@ -137,7 +137,7 @@ export default function QuestionDetailScreen() {
         const updatedCompletedQuestions = [...completedQuestions, questionIdToSave];
         setCompletedQuestions(updatedCompletedQuestions);
         await AsyncStorage.setItem(
-          `completedQuestions_part${partNum}`, 
+          `completedQuestions_part${partNum}`,
           JSON.stringify(updatedCompletedQuestions)
         );
       }
@@ -158,7 +158,7 @@ export default function QuestionDetailScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  const navigateToQuestion = (index) => {
+  const navigateToQuestion = (index: any) => {
     setResultDetails([]);
     setCurrentQuestionIndex(index);
     setQuestionsModalVisible(false);
@@ -191,7 +191,7 @@ export default function QuestionDetailScreen() {
         <Ionicons name="alert-circle-outline" size={60} color="#ef4444" />
         <Text className="text-xl font-semibold text-gray-800 mt-4">Error Loading Questions</Text>
         <Text className="text-base text-gray-600 text-center mx-8 mt-2">{error}</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           className="mt-6 bg-blue-600 px-6 py-3 rounded-lg"
           onPress={() => partNum && fetchAllQuestions(partNum as string)}
         >
@@ -227,13 +227,13 @@ export default function QuestionDetailScreen() {
                 <Text className="text-gray-600">{completedCount}/{totalQuestions} questions</Text>
               </View>
               <View className="h-2 bg-gray-200 rounded-full">
-                <View 
-                  className="h-2 bg-blue-600 rounded-full" 
-                  style={{ width: `${progressPercentage}%` }} 
+                <View
+                  className="h-2 bg-blue-600 rounded-full"
+                  style={{ width: `${progressPercentage}%` }}
                 />
               </View>
             </View>
-            
+
             {/* Question counter */}
             <View className="flex-row justify-between items-center mb-3">
               <View className="flex-row items-center">
@@ -244,47 +244,43 @@ export default function QuestionDetailScreen() {
               </View>
               <Text className="text-gray-500">Part {currentQuestion.partNum}</Text>
             </View>
-            
+
             {/* Navigation buttons with questions list */}
             <View className="flex-row justify-center space-x-2 gap-2">
               <TouchableOpacity
                 onPress={handlePrevious}
                 disabled={currentIndex === 0}
-                className={`flex-1 flex-row justify-center items-center py-2 rounded-lg ${
-                  currentIndex === 0 ? 'bg-gray-200' : 'bg-gray-300'
-                }`}
+                className={`flex-1 flex-row justify-center items-center py-2 rounded-lg ${currentIndex === 0 ? 'bg-gray-200' : 'bg-gray-300'
+                  }`}
               >
-                <Ionicons 
-                  name="chevron-back" 
-                  size={18} 
-                  color={currentIndex === 0 ? "#9CA3AF" : "#4B5563"} 
+                <Ionicons
+                  name="chevron-back"
+                  size={18}
+                  color={currentIndex === 0 ? "#9CA3AF" : "#4B5563"}
                 />
-                <Text className={`ml-1 font-medium ${
-                  currentIndex === 0 ? 'text-gray-400' : 'text-gray-700'
-                }`}>
+                <Text className={`ml-1 font-medium ${currentIndex === 0 ? 'text-gray-400' : 'text-gray-700'
+                  }`}>
                   Previous
                 </Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
                 onPress={handleNext}
                 disabled={currentIndex === questions.length - 1}
-                className={`flex-1 flex-row justify-center items-center py-2 rounded-lg ${
-                  currentIndex === questions.length - 1 ? 'bg-gray-200' : 'bg-gray-300'
-                }`}
+                className={`flex-1 flex-row justify-center items-center py-2 rounded-lg ${currentIndex === questions.length - 1 ? 'bg-gray-200' : 'bg-gray-300'
+                  }`}
               >
-                <Text className={`mr-1 font-medium ${
-                  currentIndex === questions.length - 1 ? 'text-gray-400' : 'text-gray-700'
-                }`}>
+                <Text className={`mr-1 font-medium ${currentIndex === questions.length - 1 ? 'text-gray-400' : 'text-gray-700'
+                  }`}>
                   Next
                 </Text>
-                <Ionicons 
-                  name="chevron-forward" 
+                <Ionicons
+                  name="chevron-forward"
                   size={18}
-                  color={currentIndex === questions.length - 1 ? "#9CA3AF" : "#4B5563"} 
+                  color={currentIndex === questions.length - 1 ? "#9CA3AF" : "#4B5563"}
                 />
               </TouchableOpacity>
-              
+
               {/* Question list button */}
               <TouchableOpacity
                 onPress={() => setQuestionsModalVisible(true)}
@@ -307,28 +303,27 @@ export default function QuestionDetailScreen() {
           {resultDetails.length > 0 && (
             <View className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
               <Text className="text-lg font-bold text-blue-900 mb-2">Answer Results</Text>
-              
+
               {resultDetails.map((detail, idx) => (
                 <View key={idx} className="bg-white p-4 rounded-lg mb-3 shadow-sm">
-                  <Text className={`text-lg font-semibold mb-2 ${
-                    detail.message.includes("Correct") ? "text-green-600" : "text-red-600"
-                  }`}>
+                  <Text className={`text-lg font-semibold mb-2 ${detail.message.includes("Correct") ? "text-green-600" : "text-red-600"
+                    }`}>
                     {detail.message}
                   </Text>
-                  
+
                   <View className="space-y-2">
                     <View>
                       <Text className="font-bold text-gray-700">Correct Answer:</Text>
                       <Text className="text-gray-800">{detail.correctAnswer}</Text>
                     </View>
-                    
+
                     {detail.transcript !== "N/A" && (
                       <View>
                         <Text className="font-bold text-gray-700">Transcript:</Text>
                         <Text className="text-gray-800">{detail.transcript}</Text>
                       </View>
                     )}
-                    
+
                     <View>
                       <Text className="font-bold text-gray-700">Explanation:</Text>
                       <Text className="text-gray-800">{detail.explanation}</Text>
@@ -355,20 +350,20 @@ export default function QuestionDetailScreen() {
                   <Ionicons name="close" size={24} color="#4B5563" />
                 </TouchableOpacity>
               </View>
-              
+
               <View className="mb-4 bg-gray-100 p-3 rounded-lg">
                 <View className="flex-row justify-between mb-2">
                   <Text className="text-gray-700">Completed:</Text>
                   <Text className="font-medium text-blue-600">{completedCount}/{totalQuestions}</Text>
                 </View>
                 <View className="h-2 bg-gray-200 rounded-full">
-                  <View 
-                    className="h-2 bg-blue-600 rounded-full" 
-                    style={{ width: `${progressPercentage}%` }} 
+                  <View
+                    className="h-2 bg-blue-600 rounded-full"
+                    style={{ width: `${progressPercentage}%` }}
                   />
                 </View>
               </View>
-              
+
               {/* Questions list */}
               <FlatList
                 data={questions}
@@ -378,25 +373,23 @@ export default function QuestionDetailScreen() {
                 renderItem={({ item, index }) => {
                   const isCompleted = isQuestionCompleted(item.id);
                   const isCurrentQuestion = index === currentIndex;
-                  
+
                   return (
                     <TouchableOpacity
                       onPress={() => navigateToQuestion(index)}
-                      className={`flex-row items-center p-3 mb-2 rounded-lg ${
-                        isCurrentQuestion ? 'bg-blue-100 border border-blue-300' : 'bg-gray-50'
-                      }`}
+                      className={`flex-row items-center p-3 mb-2 rounded-lg ${isCurrentQuestion ? 'bg-blue-100 border border-blue-300' : 'bg-gray-50'
+                        }`}
                     >
-                      <View className={`w-8 h-8 rounded-full mr-3 items-center justify-center ${
-                        isCompleted ? 'bg-green-500' : 'bg-gray-300'
-                      }`}>
+                      <View className={`w-8 h-8 rounded-full mr-3 items-center justify-center ${isCompleted ? 'bg-green-500' : 'bg-gray-300'
+                        }`}>
                         <Text className="text-white font-medium">{index + 1}</Text>
                       </View>
                       <View className="flex-1">
-                        <Text className="text-gray-800 font-medium" numberOfLines={1}>
-                          {item.question ? 
-                            (item.question.length > 40 ? item.question.substring(0, 40) + '...' : item.question) : 
-                            `Question ${index + 1}`}
-                        </Text>
+                        {/* <Text className="text-gray-800 font-medium" numberOfLines={1}>
+                            {item.question ? 
+                                (item.question.length > 40 ? item.question.substring(0, 40) + '...' : item.question) : 
+                                `Question ${index + 1}`}
+                            </Text> */}
                         <View className="flex-row items-center mt-1">
                           <Text className="text-xs text-gray-500 mr-2">Part {item.partNum}</Text>
                           {isCompleted ? (
@@ -412,16 +405,16 @@ export default function QuestionDetailScreen() {
                           )}
                         </View>
                       </View>
-                      <Ionicons 
-                        name="chevron-forward" 
-                        size={18} 
-                        color="#4B5563" 
+                      <Ionicons
+                        name="chevron-forward"
+                        size={18}
+                        color="#4B5563"
                       />
                     </TouchableOpacity>
                   );
                 }}
               />
-              
+
               <TouchableOpacity
                 onPress={() => setQuestionsModalVisible(false)}
                 className="py-3 bg-blue-600 rounded-lg items-center mt-auto"
@@ -437,7 +430,7 @@ export default function QuestionDetailScreen() {
         <FloatingChatButton questionId={currentQuestion.id} />
       ) : null}
       {/* Floating dictionary */}
-        <FloatingDictionary />
+      <FloatingDictionary />
     </SafeAreaView>
   );
 }

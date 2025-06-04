@@ -38,8 +38,8 @@ export default function Loader({ loadingText }: LoaderProps) {
           autoPlay
           loop
           style={{
-            width: 150,
-            height: 150,
+            width: 120,
+            height: 120,
             transform: [{ translateY: -75 }],  // đẩy lên nửa chiều cao
           }}
         />

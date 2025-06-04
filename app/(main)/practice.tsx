@@ -1,5 +1,5 @@
-import QuestionDetailScreen from "@/screens/questionDetail.screen";
+import QuestionDetailScreen from "@/screens/test/questionDetail.screen";
 
 export default function Practice() {
-    return <QuestionDetailScreen />
+  return <QuestionDetailScreen />
 }

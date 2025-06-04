@@ -1,7 +1,7 @@
-import LoginScreen from "@/screens/login.screen";
+import LoginScreen from "@/screens/auth/login.screen";
 
 export default function LoginDrawItem() {
-    return (
-        <LoginScreen />
-    )
+  return (
+    <LoginScreen />
+  )
 }

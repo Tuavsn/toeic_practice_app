@@ -28,7 +28,7 @@ const AudioManagerContext = createContext<AudioContextType>({
   isPlaying: false,
   playAudio: async () => false,
   stopCurrentAudio: async () => false,
-  setIsPlaying: () => {},
+  setIsPlaying: () => { },
 });
 
 export const AudioManagerProvider = ({ children }: { children: React.ReactNode }) => {
@@ -44,9 +44,7 @@ export const AudioManagerProvider = ({ children }: { children: React.ReactNode }
         await Audio.setAudioModeAsync({
           playsInSilentModeIOS: true,
           staysActiveInBackground: true,
-          interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
           shouldDuckAndroid: true,
-          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
           playThroughEarpieceAndroid: false,
         });
       } catch (err) {

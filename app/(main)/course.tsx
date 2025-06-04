@@ -1,8 +1,7 @@
-import CourseListScreen from "@/screens/lectureList.screen";
+import CourseListScreen from "@/screens/lecture/lectureList.screen";
 
 export default function Course() {
-
-    return (
-        <CourseListScreen />
-    )
+  return (
+    <CourseListScreen />
+  )
 }

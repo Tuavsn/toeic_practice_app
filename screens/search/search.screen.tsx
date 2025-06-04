@@ -13,30 +13,30 @@ const SearchScreen: React.FC = () => {
   
   const router = useRouter();
 
-  const [query, setQuery] = useState<string>(''); // Trạng thái tìm kiếm
+  const [query, setQuery] = useState<string>(''); // Search state
 
-  const [results, setResults] = useState<Lecture[]>([]); // Kết quả tìm kiếm
+  const [results, setResults] = useState<Lecture[]>([]); // Search results
 
-  const [selectedCategory, setSelectedCategory] = useState<Category>('course'); // Category đã chọn
+  const [selectedCategory, setSelectedCategory] = useState<Category>('course'); // Selected category
 
-  // Hàm tìm kiếm
+  // Search function
   const handleSearch = async () => {
     if (selectedCategory === 'course') {
       try {
-        const response = await getAllLectures({ pageSize: '1000', info: true, active: true, search: query }); // Gọi API với tham số tìm kiếm
-        const result = await response.json(); // Lấy dữ liệu từ API
+        const response = await getAllLectures({ pageSize: '1000', info: true, active: true, search: query }); // Call API with search parameters
+        const result = await response.json(); // Get data from API
 
-        setResults(result.data.result); // Cập nhật kết quả tìm kiếm
+        setResults(result.data.result); // Update search results
       } catch (error) {
-        console.error('Error fetching tests:', error);
+        console.error('Error fetching lectures:', error);
       }
     }
   };
 
-  // Hàm thay đổi category
+  // Function to change category
   const handleCategoryChange = (category: Category) => {
     setSelectedCategory(category);
-    setResults([]); // Xóa kết quả hiện tại khi thay đổi category
+    setResults([]); // Clear current results when changing category
   };
 
   const handlePress = (lectureId: string) => {
@@ -46,7 +46,7 @@ const SearchScreen: React.FC = () => {
       });
   };
 
-  // Render item trong danh sách kết quả
+  // Render item in results list
   const renderItem = ({ item }: { item: Lecture }) => {
     const maxTopicsToShow = 4;
     const visibleTopics = item.topic.slice(0, maxTopicsToShow);
@@ -93,7 +93,7 @@ const SearchScreen: React.FC = () => {
             paddingLeft: 8,
             fontSize: 16,
           }}
-          placeholder="Tìm kiếm..."
+          placeholder="Search..."
           value={query}
           onChangeText={setQuery}
         />
@@ -107,7 +107,7 @@ const SearchScreen: React.FC = () => {
           }}
           onPress={handleSearch}
         >
-          <Text style={{ color: '#fff', fontSize: 16 }}>Tìm kiếm</Text>
+          <Text style={{ color: '#fff', fontSize: 16 }}>Search</Text>
         </TouchableOpacity>
       </View>
 
@@ -121,7 +121,7 @@ const SearchScreen: React.FC = () => {
           }}
           onPress={() => handleCategoryChange('course')}
         >
-          <Text style={{ color: '#fff', fontSize: 16 }}>Bài học</Text>
+          <Text style={{ color: '#fff', fontSize: 16 }}>Lessons</Text>
         </TouchableOpacity>
         {/* <TouchableOpacity
           style={{
@@ -133,7 +133,7 @@ const SearchScreen: React.FC = () => {
           }}
           onPress={() => handleCategoryChange('course')}
         >
-          <Text style={{ color: '#fff', fontSize: 16 }}>Lý thuyết</Text>
+          <Text style={{ color: '#fff', fontSize: 16 }}>Theory</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
@@ -145,12 +145,12 @@ const SearchScreen: React.FC = () => {
           }}
           onPress={() => handleCategoryChange('user')}
         >
-          <Text style={{ color: '#fff', fontSize: 16 }}>Tài khoản</Text>
+          <Text style={{ color: '#fff', fontSize: 16 }}>Accounts</Text>
         </TouchableOpacity> */}
       </View>
 
       <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
-        Kết quả tìm kiếm:
+        Search results:
       </Text>
 
       <FlatList

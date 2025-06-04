@@ -16,7 +16,7 @@ export const BannerCarousel: React.FC = () => {
   };
 
   return (
-    <View className='mb-6'>
+    <View className='mb-2'>
       <FlatList
         ref={listRef}
         data={BannerData}

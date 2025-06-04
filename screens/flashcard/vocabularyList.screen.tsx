@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, SafeAreaView, TouchableOpacity } from 'react-native';
-import Database from '../database/Database';
-import FlashCardService from '../services/flashcard.service';
-import DeckItem from '../components/DeskItem';
+import Database from '../../database/Database';
+import FlashCardService from '../../services/flashcard.service';
+import DeckItem from '../../components/DeskItem';
 import { useRouter, useFocusEffect } from 'expo-router';
 
 interface Deck {
@@ -40,7 +40,7 @@ const VocabularyScreen = () => {
       await loadSavedDecks();
     } catch (err) {
       console.error('Error loading vocabulary data:', err);
-      setError('Không thể tải dữ liệu từ vựng. Vui lòng thử lại sau.');
+      setError('Could not load vocabulary data. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ const VocabularyScreen = () => {
     return (
       <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color="#007AFF" />
-        <Text className="mt-2 text-base text-gray-800">Đang tải dữ liệu...</Text>
+        <Text className="mt-2 text-base text-gray-800">Loading data...</Text>
       </View>
     );
   }
@@ -92,7 +92,7 @@ const VocabularyScreen = () => {
       <View className="flex-1 justify-center items-center bg-gray-100 p-5">
         <Text className="text-base text-red-500 text-center mb-5">{error}</Text>
         <TouchableOpacity className="px-5 py-2.5 bg-blue-500 rounded-lg shadow-md" onPress={loadData}>
-          <Text className="text-white text-base font-semibold">Thử lại</Text>
+          <Text className="text-white text-base font-semibold">Try Again</Text>
         </TouchableOpacity>
       </View>
     );
@@ -113,13 +113,10 @@ const VocabularyScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       <View className="flex-row justify-between items-center px-5 py-4 bg-white border-b border-gray-200 shadow-sm">
-        <Text className="text-2xl font-bold text-gray-800">Từ vựng</Text>
-        <TouchableOpacity className="px-4 py-2.5 bg-blue-500 rounded-lg shadow-md">
-          <Text className="text-white text-sm font-semibold">+ Tạo mới</Text>
-        </TouchableOpacity>
+        <Text className="text-2xl font-bold text-gray-800">Vocabulary</Text>
       </View>
 
-      <View className="flex-1 p-5 mb-6">
+      <View className="flex-1 p-5 mb-6 mb-10">
         {decks.length > 0 ? (
           <FlatList
             data={decks}
@@ -131,10 +128,10 @@ const VocabularyScreen = () => {
         ) : (
           <View className="flex-1 justify-center items-center p-5">
             <Text className="text-lg text-gray-600 text-center mb-6">
-              Chưa có bộ từ vựng nào. Hãy tạo bộ từ vựng mới!
+              No vocabulary sets yet. Create a new vocabulary set!
             </Text>
             <TouchableOpacity className="px-6 py-3.5 bg-blue-500 rounded-lg shadow-md">
-              <Text className="text-white text-lg font-semibold">Tạo bộ từ vựng</Text>
+              <Text className="text-white text-lg font-semibold">Create Vocabulary Set</Text>
             </TouchableOpacity>
           </View>
         )}

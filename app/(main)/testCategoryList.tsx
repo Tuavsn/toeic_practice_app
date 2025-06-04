@@ -1,5 +1,5 @@
-import TestCategoryListScreen from "@/screens/testCategoryList.screen";
+import TestCategoryListScreen from "@/screens/test/testCategoryList.screen";
 
 export default function TestCategoryList() {
-    return <TestCategoryListScreen /> 
+  return <TestCategoryListScreen />
 }
