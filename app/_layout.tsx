@@ -104,6 +104,14 @@ export default function RootLayout() {
                 headerTintColor: 'black'
               }}
               />
+              {/* Practice Detail Screen */}
+              <Stack.Screen name='(main)/draft' options={{
+                title: "Draft",
+                headerTitleAlign: 'center',
+                headerTitleStyle: { fontWeight: 'bold' },
+                headerTintColor: 'black'
+              }}
+              />
               {/* Vocabulary Screen */}
               <Stack.Screen name='(main)/vocabulary' options={{
                 title: "Vocabulary",

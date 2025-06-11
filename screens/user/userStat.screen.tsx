@@ -589,7 +589,15 @@ const StatScreen = () => {
             data={accountStat.results.slice(0, 5)}
             keyExtractor={(item) => item.resultId}
             renderItem={({ item }) => (
-              <View className="border-b border-gray-200 py-4">
+              <TouchableOpacity
+                onPress={async () => {
+                  await router.push({
+                    pathname: '/(main)/result',
+                    params: { resultId: item.resultId },
+                  });
+                }}
+                className="border-b border-gray-200 py-4"
+              >
                 <Text className="text-lg font-medium text-gray-800">{item.testName}</Text>
                 <View className="flex-row justify-between mt-2">
                   <Text className="text-sm text-gray-600">Result: {item.result}</Text>
@@ -597,7 +605,7 @@ const StatScreen = () => {
                     Date: {new Date(item.createdAt * 1000).toLocaleDateString('en-US')}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             )}
             scrollEnabled={false}
           />

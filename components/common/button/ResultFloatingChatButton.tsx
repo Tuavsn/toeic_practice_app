@@ -22,14 +22,19 @@ interface ChatMessage {
   text: string;
 }
 
-interface FloatingChatButtonProps {
+interface AskTutorButtonProps {
   questionId: string;
+  questionText?: string;
   onModalStateChange?: (isOpen: boolean) => void;
 }
 
 import chatService from '@/services/chat.service';
 
-const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onModalStateChange }) => {
+const ResultFloatingChatButton: React.FC<AskTutorButtonProps> = ({ 
+  questionId, 
+  questionText,
+  onModalStateChange 
+}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [input, setInput] = useState('');
   const [messageLogs, setMessageLogs] = useState<ChatMessage[]>([]);
@@ -38,64 +43,29 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
   const [sessionId, setSessionId] = useState<string | null>(null);
   const listRef = useRef<FlatList>(null);
 
-  const scale = useRef(new Animated.Value(1)).current;
-  const buttonPosition = useRef(new Animated.Value(0)).current;
-  const keyboardVisible = useRef(false);
-
-  useEffect(() => {
-    const keyboardWillShow = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      () => {
-        keyboardVisible.current = true;
-        Animated.timing(buttonPosition, {
-          toValue: -100, // Move up when keyboard shows
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
-      }
-    );
-
-    const keyboardWillHide = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => {
-        keyboardVisible.current = false;
-        Animated.timing(buttonPosition, {
-          toValue: 0, // Return to original position
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
-      }
-    );
-
-    return () => {
-      keyboardWillShow.remove();
-      keyboardWillHide.remove();
-    };
-  }, []);
-
   useEffect(() => {
     const checkStoredSession = async () => {
       try {
-        const storedSessionId = await AsyncStorage.getItem(`chat_session_${questionId}`);
+        const storedSessionId = await AsyncStorage.getItem(`tutor_session_${questionId}`);
         if (storedSessionId) {
           const sessionData = JSON.parse(storedSessionId);
           if (sessionData.expiry > Date.now()) {
             setSessionId(sessionData.id);
             setIsInitiated(true);
 
-            const storedMessages = await AsyncStorage.getItem(`chat_messages_${questionId}`);
+            const storedMessages = await AsyncStorage.getItem(`tutor_messages_${questionId}`);
             if (storedMessages) {
               setMessageLogs(JSON.parse(storedMessages));
             }
           } else {
-            await AsyncStorage.removeItem(`chat_session_${questionId}`);
-            await AsyncStorage.removeItem(`chat_messages_${questionId}`);
+            await AsyncStorage.removeItem(`tutor_session_${questionId}`);
+            await AsyncStorage.removeItem(`tutor_messages_${questionId}`);
           }
         }
       } catch (error) {
-        console.error("Error checking stored session:", error);
-        await AsyncStorage.removeItem(`chat_session_${questionId}`);
-        await AsyncStorage.removeItem(`chat_messages_${questionId}`);
+        console.error("Error checking stored tutor session:", error);
+        await AsyncStorage.removeItem(`tutor_session_${questionId}`);
+        await AsyncStorage.removeItem(`tutor_messages_${questionId}`);
       }
     };
 
@@ -108,7 +78,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
   useEffect(() => {
     const storeMessages = async () => {
       if (messageLogs.length > 0) {
-        await AsyncStorage.setItem(`chat_messages_${questionId}`, JSON.stringify(messageLogs));
+        await AsyncStorage.setItem(`tutor_messages_${questionId}`, JSON.stringify(messageLogs));
       }
     };
 
@@ -122,22 +92,8 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
     }
   }, [modalVisible, onModalStateChange]);
 
-  // Button press animation
-  const animateButton = () => {
-    Animated.sequence([
-      Animated.timing(scale, {
-        toValue: 0.9,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scale, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const handleOpenModal = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setModalVisible(true);
   };
 
@@ -158,7 +114,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
         // Store session ID with 24-hour expiry
         const expiryTime = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
         await AsyncStorage.setItem(
-          `chat_session_${questionId}`,
+          `tutor_session_${questionId}`,
           JSON.stringify({ id: sessionId, expiry: expiryTime })
         );
 
@@ -169,14 +125,14 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
         // Handle error response
         setMessageLogs([{
           sender: "bot",
-          text: "Sorry, there was an error connecting to the expert. Please try again later."
+          text: "Sorry, there was an error connecting to the tutor. Please try again later."
         }]);
       }
     } catch (error) {
-      console.error("Error starting chat:", error);
+      console.error("Error starting tutor chat:", error);
       setMessageLogs([{
         sender: "bot",
-        text: "Sorry, there was an error connecting to the expert. Please try again later."
+        text: "Sorry, there was an error connecting to the tutor. Please try again later."
       }]);
     } finally {
       setIsLoading(false);
@@ -207,7 +163,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
         }]);
       }
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Error sending message to tutor:", error);
       setMessageLogs([...newMessageLogs, {
         sender: "bot",
         text: "Sorry, there was an error receiving a response. Please try again later."
@@ -237,38 +193,19 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
 
   return (
     <>
-      <Animated.View
-        style={{
-          position: 'absolute',
-          bottom: 150,
-          right: 10,
-          transform: [
-            { scale },
-            { translateY: buttonPosition }
-          ],
-          zIndex: 1000,
-        }}
-      >
+      {/* Ask Tutor Button */}
+      <View className="mt-3 px-3">
         <TouchableOpacity
-          onPress={animateButton}
-          style={{
-            backgroundColor: '#3B82F6', // blue-600
-            width: 45,
-            height: 45,
-            borderRadius: 30,
-            justifyContent: 'center',
-            alignItems: 'center',
-            elevation: 5,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.3,
-            shadowRadius: 3,
-          }}
+          onPress={handleOpenModal}
+          className="bg-blue-600 flex-row items-center justify-center py-3 px-4 rounded-lg shadow-sm"
+          activeOpacity={0.7}
         >
-          <Ionicons name="school" size={24} color="white" />
+          <Ionicons name="school" size={20} color="white" />
+          <Text className="text-white font-semibold ml-2">Ask Tutor</Text>
         </TouchableOpacity>
-      </Animated.View>
+      </View>
 
+      {/* Chat Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -285,12 +222,22 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
               <View className="flex-row justify-between items-center p-4 border-b border-gray-200">
                 <View className="flex-row items-center">
                   <Ionicons name="school" size={24} color="#3B82F6" />
-                  <Text className="text-xl font-bold text-gray-800 ml-2">Chat with Expert</Text>
+                  <Text className="text-xl font-bold text-gray-800 ml-2">Ask Tutor</Text>
                 </View>
                 <TouchableOpacity onPress={handleCloseModal}>
                   <Ionicons name="close" size={24} color="#4B5563" />
                 </TouchableOpacity>
               </View>
+
+              {/* Question Context (if provided) */}
+              {questionText && (
+                <View className="p-4 bg-gray-50 border-b border-gray-200">
+                  <Text className="text-sm font-semibold text-gray-700 mb-1">Question:</Text>
+                  <Text className="text-sm text-gray-600" numberOfLines={3}>
+                    {questionText}
+                  </Text>
+                </View>
+              )}
 
               {/* Chat messages */}
               <FlatList
@@ -323,14 +270,14 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
                     <View className="flex-1 justify-center items-center p-8">
                       <Ionicons name="school-outline" size={60} color="#3B82F6" />
                       <Text className="text-center text-gray-600 mt-4 mb-6">
-                        Chat with an AI expert to get help with this question.
+                        Get personalized help from an AI tutor for this question.
                       </Text>
                       <TouchableOpacity
                         onPress={startChat}
                         className="bg-blue-600 px-6 py-3 rounded-full flex-row items-center"
                       >
                         <Ionicons name="school" size={20} color="white" />
-                        <Text className="text-white font-bold ml-2">Start Chat</Text>
+                        <Text className="text-white font-bold ml-2">Start Tutoring</Text>
                       </TouchableOpacity>
                     </View>
                   ) : null
@@ -339,7 +286,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
                   isLoading ? (
                     <View className="flex-row items-center p-3 bg-gray-100 rounded-2xl self-start mb-4">
                       <ActivityIndicator size="small" color="#3B82F6" />
-                      <Text className="ml-2 text-gray-700">Thinking...</Text>
+                      <Text className="ml-2 text-gray-700">Tutor is thinking...</Text>
                     </View>
                   ) : null
                 }
@@ -354,7 +301,7 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
                       value={input}
                       onChangeText={setInput}
                       onKeyPress={handleKeyPress}
-                      placeholder="Type your message..."
+                      placeholder="Ask your tutor..."
                       multiline={false}
                       returnKeyType="send"
                       blurOnSubmit={true}
@@ -391,4 +338,4 @@ const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ questionId, onM
   );
 };
 
-export default FloatingChatButton;
+export default ResultFloatingChatButton;

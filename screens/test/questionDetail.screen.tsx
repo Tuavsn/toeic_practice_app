@@ -72,7 +72,7 @@ export default function QuestionDetailScreen() {
 
     try {
       const response = await questionService.getAllQuestions({
-        pageSize: 999, // Fetch all questions at once
+        pageSize: 20, // Fetch all questions at once
         partNum: partNumber,
         current: 1,
       });

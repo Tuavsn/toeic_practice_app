@@ -9,7 +9,7 @@ export const API_ENDPOINTS = {
   RESULT: `${API_URL}/api/v1/results`,
   LECTURES: `${API_URL}/api/v1/lectures`,
   COMMENTS: `${API_URL}/api/v1/comments`,
-  NOTIFY: `${API_URL}/api/v1/notify`,
+  NOTIFICATIONS: `${API_URL}/api/v1/notifications`,
   RECOMMENDATIONS: `${API_URL}/api/v1/recommendations`,
   CHATGPT: `${API_URL}/api/v1/chatgpt`
 };

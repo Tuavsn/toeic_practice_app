@@ -3,7 +3,7 @@ import axiosClient, { ApiResponseStructure } from "./AxiosClient";
 import Logger from "./Logger";
 import { ApiResponse, PaginatedResponse } from "@/types/global.type";
 
-type HttpMethod = 'get' | 'post' | 'put' | 'delete';
+type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
 interface ApiOptions {
   params?: Record<string, any>;
@@ -111,6 +111,13 @@ class ApiHandler {
    */
   public async Put<T = any>(url: string, data?: any, options?: ApiOptions): Promise<ApiResponse<T>> {
     return this.Execute<T>(url, data, 'put', options);
+  }
+
+  /**
+   * Convenience method for PATCH requests
+   */
+  public async Patch<T = any>(url: string, data?: any, options?: ApiOptions): Promise<ApiResponse<T>> {
+    return this.Execute<T>(url, data, 'patch', options);
   }
 
   /**

@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import QuestionDisplay from "@/components/common/question/QuestionDisplay";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, Text, View, TouchableOpacity, Alert, Modal, FlatList } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, Alert, Modal, FlatList, BackHandler } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuestions } from "@/context/QuestionContext";
 import LottieView from 'lottie-react-native';
@@ -13,6 +13,7 @@ import questionService from "@/services/question.service";
 import { AnswerPair } from "@/types/global.type";
 import FloatingChatButton from "@/components/common/button/FloatingChatButton";
 import FloatingDictionary from "@/components/common/button/FloatingDictionary";
+import { useDraft } from "@/hooks/useDraft";
 
 export default function TestDetailScreen() {
   const { partNum, questionId, testId } = useLocalSearchParams();
@@ -27,15 +28,27 @@ export default function TestDetailScreen() {
     setCurrentQuestionIndex
   } = useQuestions();
 
+  const { 
+    saveDraft, 
+    loadDraft, 
+    deleteDraft, 
+    isDraftExists,
+    loading: draftLoading,
+    error: draftError 
+  } = useDraft();
+
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [submittedAnswers, setSubmittedAnswers] = useState<Record<string, string>>({});
   const [loadingText, setLoadingText] = useState("Loading test");
   const [questionsModalVisible, setQuestionsModalVisible] = useState(false);
+  const [hasDraftLoaded, setHasDraftLoaded] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [testCompleted, setTestCompleted] = useState(false);
 
   // Initialize submittedAnswers with empty strings for all questions when questions are loaded
   useEffect(() => {
-    if (questions.length > 0) {
+    if (questions.length > 0 && !hasDraftLoaded && !isInitialized) {
       const initialAnswers: Record<string, string> = {};
       
       questions.forEach(question => {
@@ -53,8 +66,131 @@ export default function TestDetailScreen() {
       });
       
       setSubmittedAnswers(initialAnswers);
+      setIsInitialized(true);
     }
-  }, [questions]);
+  }, [questions, hasDraftLoaded, isInitialized]);
+
+  // Load draft when component mounts - only run once when questions are available
+  useEffect(() => {
+    const loadExistingDraft = async () => {
+      if ((testId || partNum) && questions.length > 0 && !hasDraftLoaded) {
+        try {
+          const draft = await loadDraft(
+            testId as string || 'part_test', 
+            partNum as string
+          );
+          
+          if (draft) {
+            setSubmittedAnswers(draft.submittedAnswers);
+            setCurrentQuestionIndex(draft.currentQuestionIndex);
+            setHasDraftLoaded(true);
+            setIsInitialized(true);
+            
+            // Show draft loaded notification
+            Alert.alert(
+              "Draft Loaded",
+              `Your previous progress has been restored. You had answered ${draft.answeredCount} out of ${draft.totalQuestions} questions.`,
+              [{ text: "Continue", style: "default" }]
+            );
+          } else {
+            // No draft found, initialize normally
+            setHasDraftLoaded(true);
+          }
+        } catch (err) {
+          console.error('Error loading draft:', err);
+          setHasDraftLoaded(true); // Set to true even on error to prevent infinite loop
+        }
+      }
+    };
+
+    loadExistingDraft();
+  }, [testId, partNum, questions.length, hasDraftLoaded]);
+
+  // Handle back button press and exit confirmation
+  const handleBackPress = useCallback(() => {
+    if (testCompleted) {
+      return false; // Allow default back behavior if test is completed
+    }
+
+    // Check if user has answered any questions
+    const answeredCount = Object.values(submittedAnswers).filter(answer => answer !== "").length;
+    
+    if (answeredCount > 0) {
+      // Show save draft confirmation
+      Alert.alert(
+        "Save Progress?",
+        `You have answered ${answeredCount} questions. Would you like to save your progress before leaving?`,
+        [
+          {
+            text: "Don't Save",
+            onPress: () => {
+              // Delete any existing draft and exit
+              if (testId || partNum) {
+                deleteDraft(
+                  testId as string || 'part_test',
+                  partNum as string
+                ).catch(err => console.error('Error deleting draft:', err));
+              }
+              router.back();
+            },
+            style: "destructive"
+          },
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          {
+            text: "Save & Exit",
+            onPress: async () => {
+              try {
+                const totalQuestions = 200;
+                await saveDraft({
+                  testId: testId as string || 'part_test',
+                  partNum: partNum as string,
+                  submittedAnswers,
+                  currentQuestionIndex: currentIndex,
+                  totalQuestions,
+                  answeredCount
+                });
+                
+                Alert.alert(
+                  "Progress Saved",
+                  "Your progress has been saved successfully.",
+                  [{ 
+                    text: "OK", 
+                    onPress: () => router.back() 
+                  }]
+                );
+              } catch (err) {
+                console.error('Error saving draft:', err);
+                Alert.alert(
+                  "Save Error",
+                  "Failed to save your progress, but you can still exit.",
+                  [
+                    { text: "Exit Anyway", onPress: () => router.back() },
+                    { text: "Stay", style: "cancel" }
+                  ]
+                );
+              }
+            }
+          }
+        ]
+      );
+    } else {
+      // No answers given, just go back
+      router.back();
+    }
+    
+    return true; // Prevent default back behavior
+  }, [testCompleted, submittedAnswers, testId, partNum, currentIndex, saveDraft, deleteDraft, router]);
+
+  // Set up back handler
+  useFocusEffect(
+    useCallback(() => {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+      return () => backHandler.remove();
+    }, [handleBackPress])
+  );
 
   // Fetch questions when screen loads or params change
   useFocusEffect(
@@ -69,13 +205,13 @@ export default function TestDetailScreen() {
 
   // Set specific question as current if questionId is provided
   useEffect(() => {
-    if (questionId && questions.length > 0) {
+    if (questionId && questions.length > 0 && isInitialized) {
       const index = questions.findIndex(q => q.id === questionId);
       if (index >= 0) {
         setCurrentQuestionIndex(index);
       }
     }
-  }, [questions, questionId, setCurrentQuestionIndex]);
+  }, [questions, questionId, isInitialized]);
 
   // Fetch questions by part number
   const fetchQuestionsByPart = async (partNumber: string) => {
@@ -228,6 +364,18 @@ export default function TestDetailScreen() {
 
       // Check for successful response
       if (submitResponse.success) {
+        setTestCompleted(true);
+        
+        // Delete draft after successful submission
+        try {
+          await deleteDraft(
+            testId as string || 'part_test',
+            partNum as string
+          );
+        } catch (draftErr) {
+          console.error('Error deleting draft after submission:', draftErr);
+        }
+
         Alert.alert("Success", "Test submitted successfully");
         
         const resultData = submitResponse.data;
@@ -267,6 +415,32 @@ export default function TestDetailScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
+  // Add manual save draft function for user-initiated saves
+  const handleManualSaveDraft = async () => {
+    try {
+      const answeredCount = Object.values(submittedAnswers).filter(answer => answer !== "").length;
+      const totalQuestions = 200;
+      
+      await saveDraft({
+        testId: testId as string || 'part_test',
+        partNum: partNum as string,
+        submittedAnswers,
+        currentQuestionIndex: currentIndex,
+        totalQuestions,
+        answeredCount
+      });
+      
+      Alert.alert(
+        "Progress Saved",
+        `Your progress has been saved successfully. You have answered ${answeredCount} out of ${totalQuestions} questions.`,
+        [{ text: "OK" }]
+      );
+    } catch (err) {
+      console.error('Error saving draft:', err);
+      Alert.alert("Save Error", "Failed to save your progress. Please try again.");
+    }
+  };
+
   if (loading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-white">
@@ -277,6 +451,9 @@ export default function TestDetailScreen() {
           style={{ width: 120, height: 120 }}
         />
         <Text className="text-base text-gray-600 mt-4">{loadingText}</Text>
+        {draftLoading && (
+          <Text className="text-sm text-blue-600 mt-2">Loading saved progress...</Text>
+        )}
       </SafeAreaView>
     );
   }
@@ -344,10 +521,17 @@ export default function TestDetailScreen() {
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Progress Bar and Navigation */}
           <View className="mb-6">
-            {/* Progress indicator */}
+            {/* Progress indicator with draft status */}
             <View className="mb-2">
               <View className="flex-row justify-between mb-1">
-                <Text className="text-gray-600 font-medium">Test Progress</Text>
+                <View className="flex-row items-center">
+                  <Text className="text-gray-600 font-medium">Test Progress</Text>
+                  {hasDraftLoaded && (
+                    <View className="ml-2 px-2 py-1 bg-blue-100 rounded-full">
+                      <Text className="text-xs text-blue-600">Draft</Text>
+                    </View>
+                  )}
+                </View>
                 <Text className="text-gray-600">{answeredCount}/{totalQuestions} questions</Text>
               </View>
               <View className="h-2 bg-gray-200 rounded-full">
@@ -369,8 +553,8 @@ export default function TestDetailScreen() {
               <Text className="text-gray-500">Part {currentQuestion.partNum}</Text>
             </View>
             
-            {/* Navigation buttons - UPDATED: Moved questions list button inline and made it icon-only */}
-            <View className="flex-row justify-center space-x-2 gap-2">
+            {/* Navigation buttons */}
+            <View className="flex-row justify-center space-x-2 gap-2 mb-3">
               <TouchableOpacity
                 onPress={handlePrevious}
                 disabled={currentIndex === 0}
@@ -409,14 +593,29 @@ export default function TestDetailScreen() {
                 />
               </TouchableOpacity>
               
-              {/* New icon-only questions list button */}
+              {/* Questions list button */}
               <TouchableOpacity
                 onPress={() => setQuestionsModalVisible(true)}
                 className="py-2 px-3 bg-blue-100 rounded-lg flex-row justify-center items-center"
               >
                 <Ionicons name="list" size={18} color="#3B82F6" />
               </TouchableOpacity>
+            </View>
 
+            {/* Action buttons row */}
+            <View className="flex-row justify-center space-x-2 gap-2">
+              {/* Manual Save Draft Button */}
+              <TouchableOpacity
+                onPress={handleManualSaveDraft}
+                className="flex-1 py-2 bg-orange-500 rounded-lg flex-row justify-center items-center"
+              >
+                <Ionicons name="save-outline" size={18} color="#ffffff" />
+                <Text className="ml-1 font-medium text-white">
+                  Save Draft
+                </Text>
+              </TouchableOpacity>
+
+              {/* Submit Test Button */}
               <TouchableOpacity
                 onPress={handleSubmitTest}
                 className="flex-1 py-2 bg-green-600 rounded-lg flex-row justify-center items-center"
@@ -439,7 +638,7 @@ export default function TestDetailScreen() {
           />
         </ScrollView>
 
-        {/* Questions Overview Modal - UPDATED: Fixed layout for better visibility */}
+        {/* Questions Overview Modal */}
         <Modal
           animationType="slide"
           transparent={true}

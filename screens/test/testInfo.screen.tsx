@@ -148,6 +148,17 @@ export default function TestInfoScreen(): JSX.Element {
     });
   };
 
+  // Handle getting draft
+  const handleGetDraft = async (): Promise<void> => {
+    if (!testId) return;
+    
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    
+    await router.push({
+      pathname: '/(main)/draft',
+    });
+  };
+
   // Format test details for display
   const formatTestDetails = (): TestDetail[] => {
     if (!testInfo) return [];
@@ -272,6 +283,20 @@ export default function TestInfoScreen(): JSX.Element {
           </Text>
         </TouchableOpacity>
 
+        <TouchableOpacity 
+          className={`${isCompleted ? 'bg-emerald-600' : 'bg-blue-500'} rounded-xl py-4 mb-6 flex-row justify-center items-center gap-2 shadow-sm`}
+          onPress={handleGetDraft}
+        >
+          <Ionicons 
+            name={isCompleted ? "refresh" : "play-circle-outline"} 
+            size={20} 
+            color="#ffffff" 
+          />
+          <Text className="text-lg font-semibold text-white">
+            Draft List
+          </Text>
+        </TouchableOpacity>
+        
         <View className="bg-white rounded-xl p-4 mb-6 shadow-sm">
           {currentUserId ? (
             <CommentSystem
