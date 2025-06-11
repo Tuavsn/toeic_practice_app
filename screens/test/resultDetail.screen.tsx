@@ -1,4 +1,5 @@
 import Loader from '@/components/Loader';
+import ResultFloatingChatButton from '@/components/common/button/ResultFloatingChatButton';
 import QuestionDisplay from '@/components/common/question/QuestionDisplay';
 import ProgressBar from '@/components/common/stat/ProgressBar';
 import useAuth from '@/hooks/useAuth';
@@ -89,15 +90,44 @@ const ResultDetailScreen = () => {
     )
   }
 
+  const renderQuestionWithTutor = (userAnswer: UserAnswer, index: number) => {
+    return (
+      <View key={index} className="mb-4">
+        <QuestionDisplay
+          question={userAnswer as UserAnswer}
+          displayQuestNum={true}
+          disableSelect={true}
+        />
+        
+        {/* Render explanations */}
+        {userAnswer.subUserAnswer.length > 0 ? (
+          userAnswer.subUserAnswer.map((subUserAnswer, subIndex) => (
+            <View key={subIndex}>
+              {renderExplaintation(subUserAnswer)}
+            </View>
+          ))
+        ) : (
+          renderExplaintation(userAnswer)
+        )}
+
+        {/* Ask Tutor Button */}
+        <ResultFloatingChatButton 
+          questionId={userAnswer.questionId || `question_${index}`}
+          questionText={userAnswer.content}
+        />
+      </View>
+    )
+  }
+
   return (
     <SafeAreaView className='flex-1'>
       {loading ? (
         <Loader loadingText="Loading results" />
       ) : (
-        <View className='flex-1 p-4 bg-gray-100'>
+        <View className='flex-1 bg-gray-100'>
           {results && (
             <>
-              <ScrollView className="flex-1" ref={scrollViewRef}>
+              <ScrollView className="flex-1 p-4" ref={scrollViewRef}>
                 <View key={results.id} className="mb-6 p-4 bg-white rounded-lg shadow-md">
                   <Text className="text-lg font-semibold text-gray-800">Result Details</Text>
                   <View className="mt-2">
@@ -152,7 +182,7 @@ const ResultDetailScreen = () => {
                           legendFontSize: 12
                         }
                       ]}
-                      width={screenWidth - 40} // Chart width
+                      width={screenWidth - 40}
                       height={220}
                       chartConfig={{
                         backgroundColor: "#ffffff",
@@ -165,37 +195,32 @@ const ResultDetailScreen = () => {
                     />
                   </View>
                 </View>
-                {paginatedQuestions.map((userAnswer, index) => (
-                  <View key={index}>
-                    <QuestionDisplay
-                      question={userAnswer as UserAnswer}
-                      displayQuestNum={true}
-                      key={index}
-                      disableSelect={true}
-                    />
-                    {userAnswer.subUserAnswer.length > 0 ? (
-                      userAnswer.subUserAnswer.map((subUserAnswer, index) => (
-                        renderExplaintation(subUserAnswer)
-                      ))
-                    ) : (
-                      renderExplaintation(userAnswer)
-                    )}
-                  </View>
-                ))}
+                
+                {/* Render questions with Ask Tutor buttons */}
+                {paginatedQuestions.map((userAnswer, index) => 
+                  renderQuestionWithTutor(userAnswer, index)
+                )}
               </ScrollView>
-              <View className="flex-row justify-between mt-4">
-                <View className="flex-row gap-4">
-                  <View>
+              
+              {/* Pagination Controls */}
+              <View className="bg-white border-t border-gray-200 p-4">
+                <View className="flex-row justify-between items-center">
+                  <View className="flex-1 mr-2">
                     <Button
-                      color={"#004B8D"}
+                      color="#004B8D"
                       title="Previous"
                       onPress={() => handlePageChange(page - 1)}
                       disabled={page === 1}
                     />
                   </View>
-                  <View>
+                  <View className="px-4">
+                    <Text className="text-gray-600 font-medium">
+                      Page {page} of {Math.ceil(userAnswer.length / ITEMS_PER_PAGE)}
+                    </Text>
+                  </View>
+                  <View className="flex-1 ml-2">
                     <Button
-                      color={"#004B8D"}
+                      color="#004B8D"
                       title="Next"
                       onPress={() => handlePageChange(page + 1)}
                       disabled={end >= userAnswer.length}
