@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { ImageBackground, Text, TouchableOpacity, View } from 'react-native';
 
 const placeholderImage = require('@/assets/images/course-placeholder.png');
 
@@ -22,7 +22,7 @@ const DeckItem: React.FC<DeckItemProps> = ({ deck, isSaved, onPress, onSave }) =
 
   return (
     <TouchableOpacity
-      className="mx-4 my-3 h-36 rounded-xl overflow-hidden shadow-lg"
+      className="mx-4 my-3 h-40 rounded-xl overflow-hidden shadow-lg "
       activeOpacity={0.85}
       onPress={onPress}
     >

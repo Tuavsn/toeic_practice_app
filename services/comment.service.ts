@@ -1,6 +1,5 @@
 import { API_ENDPOINTS } from "@/constants/api";
-import { ApiResponse, PaginationMeta, Comment, CommentTargetType } from "@/types/global.type";
-import { CreateCommentRequest, DeleteCommentRequest, User } from "@/types/global.type";
+import { ApiResponse, Comment, CommentTargetType, CreateCommentRequest, DeleteCommentRequest, User } from "@/types/global.type";
 import ApiHandler from "@/utils/ApiHandler";
 import Logger from "@/utils/Logger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -43,7 +42,7 @@ class CommentService {
 
     try {
       // Convert filter params to query parameters
-      const params: Record<string, any> = {};
+      const params: Record<string, any> = {active:true}
       Object.entries(filterParams).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           params[key] = value;

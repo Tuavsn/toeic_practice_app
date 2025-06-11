@@ -1,6 +1,3 @@
-import { useState, useEffect, useRef } from 'react';
-import { Alert, TextInput, FlatList } from 'react-native';
-import commentService from '../services/comment.service';
 import {
   Comment,
   CommentTargetType,
@@ -8,7 +5,9 @@ import {
   DeleteCommentRequest,
   DeleteReasonTagComment
 } from '@/types/global.type';
-
+import { useEffect, useRef, useState } from 'react';
+import { Alert, FlatList, LogBox, TextInput } from 'react-native';
+import commentService from '../services/comment.service';
 interface PaginationParams {
   current: number;
   pageSize: number;
@@ -37,7 +36,9 @@ export const useCommentSystem = (
   // Refs
   const commentInputRef = useRef<TextInput>(null);
   const flatListRef = useRef<FlatList>(null);
-
+  useEffect(() => {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+  }, [])
   useEffect(() => {
     fetchRootComments(true);
   }, [targetType, targetId]);
@@ -61,7 +62,7 @@ export const useCommentSystem = (
           setRootComments(response.data);
           setPage(2);
         } else {
-          setRootComments(prev => [...prev, ...response.data]);
+          setRootComments(prev => [... new Set([...prev, ...response.data])]);
           setPage(currentPage + 1);
         }
 
@@ -175,10 +176,10 @@ export const useCommentSystem = (
           list.map(comment =>
             comment.id === commentId
               ? {
-                  ...comment,
-                  isLikedByCurrentUser: response.data.isLikedByCurrentUser,
-                  likeCounts: response.data.likeCounts
-                }
+                ...comment,
+                isLikedByCurrentUser: response.data.isLikedByCurrentUser,
+                likeCounts: response.data.likeCounts
+              }
               : comment
           );
 
@@ -211,11 +212,11 @@ export const useCommentSystem = (
           list.map(comment =>
             comment.id === commentId
               ? {
-                  ...comment,
-                  deleted: true,
-                  deleteReasonTag: reasonTag,
-                  content: '[Deleted]'
-                }
+                ...comment,
+                deleted: true,
+                deleteReasonTag: reasonTag,
+                content: '[Deleted]'
+              }
               : comment
           );
 
@@ -265,11 +266,11 @@ export const useCommentSystem = (
     commentText,
     replyTo,
     expandedComments,
-    
+
     // Refs
     commentInputRef,
     flatListRef,
-    
+
     // Handlers
     setCommentText,
     handleSubmitComment,

@@ -1,14 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import LottieView from 'lottie-react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import CommentSystem from '@/components/CommentSession';
 import testService from '@/services/test.service';
-import { CommentTargetType } from '@/types/global.type';
-import { BaseObject } from '@/types/global.type';
+import { BaseObject, CommentTargetType } from '@/types/global.type';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import LottieView from 'lottie-react-native';
+import React, { useCallback, useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // TestInfo interface as provided
 export interface TestInfo extends BaseObject {
@@ -23,9 +24,6 @@ export interface TestInfo extends BaseObject {
     topicNames: string[];
   }[];
 }
-import CommentSystem from '@/components/CommentSession';
-import { useFocusEffect } from '@react-navigation/native';
-import FloatingDictionary from '@/components/common/button/FloatingDictionary';
 
 // Interface for test details
 interface TestDetail {
