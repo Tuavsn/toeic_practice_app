@@ -32,9 +32,6 @@ interface TestDetail {
 }
 
 // Interface for route params
-interface TestInfoParams {
-  testId: string;
-}
 
 export default function TestInfoScreen(): JSX.Element {
   const params = useLocalSearchParams<TestInfoParams>();

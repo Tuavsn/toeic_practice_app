@@ -1,13 +1,13 @@
-import { API_ENDPOINTS } from "@/constants/api";
+import { ApiResponse, PaginatedResponse } from "@/types/global.type";
 import axiosClient, { ApiResponseStructure } from "./AxiosClient";
 import Logger from "./Logger";
-import { ApiResponse, PaginatedResponse } from "@/types/global.type";
 
 type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
 
 interface ApiOptions {
   params?: Record<string, any>;
   headers?: Record<string, string>;
+  data?: any;
 }
 
 class ApiHandler {
