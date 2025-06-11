@@ -9,7 +9,7 @@
 
 import Loader from "@/components/Loader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Redirect } from "expo-router";
+import { Href, Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 
 export default function index() {
@@ -29,5 +29,5 @@ export default function index() {
 
   if (loading) return <Loader />;
 
-  return <Redirect href={isFirstLoad ? "/welcome-intro" : "/(drawer)/"} />;
+  return <Redirect href={isFirstLoad ? "/welcome-intro" as Href: "/(drawer)/" as Href} />;
 }
