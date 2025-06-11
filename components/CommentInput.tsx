@@ -1,7 +1,7 @@
-import React, { forwardRef } from 'react';
-import { View, TextInput, TouchableOpacity, Image, Text } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { Comment } from '@/types/global.type';
+import { Ionicons } from '@expo/vector-icons';
+import React, { forwardRef } from 'react';
+import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface CommentInputProps {
   value: string;
@@ -62,7 +62,7 @@ const CommentInput = forwardRef<TextInput, CommentInputProps>(({
         {replyTo && (
           <View className="bg-gray-100 p-2 rounded flex-row justify-between items-center">
             <Text className="text-xs">
-              Replying to <Text className="font-bold">{replyTo.userDisplayName}</Text>
+              Replying to <Text className="font-bold text-sm">{replyTo.userDisplayName}</Text>
             </Text>
             <TouchableOpacity onPress={onCancelReply}>
               <Text className="text-xs text-red-500">Cancel</Text>

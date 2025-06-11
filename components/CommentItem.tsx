@@ -45,10 +45,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
               <Ionicons name="person" size={16} color="#666" />
             </View>
           )}
-          <Text className="font-bold">{comment.userDisplayName}</Text>
+          <Text className="font-bold text-sm">{comment.userDisplayName}</Text>
         </View>
-        <Text className="text-xs text-gray-400">{convertToVietnamTime(comment.createdAt, 'short')}</Text>
       </View>
+      <Text className="text-xs text-gray-400">{convertToVietnamTime(comment.createdAt, 'short')}</Text>
 
       {/* Comment content */}
       <View className="mb-3">
