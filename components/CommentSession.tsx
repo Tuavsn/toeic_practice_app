@@ -1,15 +1,14 @@
+import { useCommentSystem } from '@/hooks/useComment';
+import { Comment, CommentTargetType } from '@/types/global.type';
 import React from 'react';
 import {
-  View,
-  Text,
+  ActivityIndicator,
   FlatList,
-  ActivityIndicator
+  Text,
+  View
 } from 'react-native';
-import { CommentTargetType, Comment } from '@/types/global.type';
 import CommentInput from './CommentInput';
 import CommentItem from './CommentItem';
-import { useCommentSystem } from '@/hooks/useComment';
-
 interface CommentSystemProps {
   targetType: CommentTargetType;
   targetId: string;

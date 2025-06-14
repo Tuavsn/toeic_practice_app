@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { ScrollView, View, Text, Dimensions, FlatList, Animated, RefreshControl, TouchableOpacity } from 'react-native';
-import { BarChart, PieChart } from 'react-native-chart-kit';
 import useAuth from '@/hooks/useAuth';
-import { router } from 'expo-router';
-import userService, { RecommendationResponse, RecommendedTest, RecommendedLecture } from "@/services/user.service";
-import LottieView from 'lottie-react-native';
-import * as Haptics from 'expo-haptics';
+import userService, { RecommendationResponse, RecommendedLecture, RecommendedTest } from "@/services/user.service";
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
+import LottieView from 'lottie-react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { BarChart, PieChart } from 'react-native-chart-kit';
 
 // Types based on the actual API response structure
 type OverallStat = {
@@ -336,6 +336,7 @@ const StatScreen = () => {
   // Modified to handle local state changes without navigation
   const renderRecommendationItem = (item: RecommendedTest | RecommendedLecture, type: 'test' | 'lecture') => (
     <TouchableOpacity
+      key={item.id}
       className="bg-white rounded-lg p-4 mb-3 shadow-sm border border-gray-100"
       onPress={() => {
         try {
@@ -553,14 +554,14 @@ const StatScreen = () => {
 
       {/* Bar Chart */}
       {index === 3 && accountStat.topicStats.length > 0 && (
-        <View className="bg-white rounded-2xl shadow-lg p-5 mb-6">
+        <View className="bg-white rounded-2xl shadow-lg p-5 mb-7">
           <Text className="text-xl font-semibold text-center text-gray-700 mb-4">
             Accuracy by Topic
           </Text>
           <BarChart
             data={barChartData}
             width={screenWidth - 40}
-            height={220}
+            height={500}
             chartConfig={{
               backgroundColor: '#f9f9f9',
               backgroundGradientFrom: '#f9f9f9',

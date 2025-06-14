@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  SafeAreaView,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  SafeAreaView,
-  FlatList,
-  Alert
+  View
 } from 'react-native';
-import axios from 'axios';
-import { Ionicons } from '@expo/vector-icons';
 
 // Định nghĩa các interface cho dữ liệu
 interface Phonetic {
@@ -484,7 +484,7 @@ const DictionaryScreen: React.FC = () => {
 
         <HistorySection />
         <BookmarksSection visible={showBookmarks} />
-        <SuggestionsSection /> {/* Thêm component gợi ý từ */}
+        <SuggestionsSection /> 
         <ResultSection />
       </View>
     </SafeAreaView>

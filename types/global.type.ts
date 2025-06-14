@@ -187,6 +187,7 @@ export interface PaginationMeta {
 // Generic paginated response structure
 export interface PaginatedResponse<T> {
   meta: PaginationMeta;
+  result?: T[]
 }
 
 // Interface for our ApiResponse

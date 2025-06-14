@@ -1,14 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import LottieView from 'lottie-react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import CommentSystem from '@/components/CommentSession';
 import testService from '@/services/test.service';
-import { CommentTargetType } from '@/types/global.type';
-import { BaseObject } from '@/types/global.type';
+import { BaseObject, CommentTargetType } from '@/types/global.type';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import LottieView from 'lottie-react-native';
+import React, { useCallback, useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // TestInfo interface as provided
 export interface TestInfo extends BaseObject {
@@ -23,9 +24,6 @@ export interface TestInfo extends BaseObject {
     topicNames: string[];
   }[];
 }
-import CommentSystem from '@/components/CommentSession';
-import { useFocusEffect } from '@react-navigation/native';
-import FloatingDictionary from '@/components/common/button/FloatingDictionary';
 
 // Interface for test details
 interface TestDetail {
@@ -34,15 +32,12 @@ interface TestDetail {
 }
 
 // Interface for route params
-interface TestInfoParams {
-  testId: string;
-}
 
 export default function TestInfoScreen(): JSX.Element {
   const params = useLocalSearchParams<TestInfoParams>();
   const testId = params.testId;
   const router = useRouter();
-  
+
   const [testInfo, setTestInfo] = useState<TestInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +63,7 @@ export default function TestInfoScreen(): JSX.Element {
     try {
       const completedTests = await AsyncStorage.getItem('completedTests');
       let tests: string[] = completedTests ? JSON.parse(completedTests) : [];
-      
+
       if (!tests.includes(id)) {
         tests.push(id);
         await AsyncStorage.setItem('completedTests', JSON.stringify(tests));
@@ -107,7 +102,7 @@ export default function TestInfoScreen(): JSX.Element {
         checkTestCompletion(testId);
         fetchUserInfo();
       }
-      
+
       return () => {
         // Cleanup if needed
       };
@@ -118,10 +113,10 @@ export default function TestInfoScreen(): JSX.Element {
   const fetchTestInfo = async (id: string): Promise<void> => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await testService.getTestInfo(id);
-      
+
       if (response.success && response.data) {
         setTestInfo(response.data as TestInfo);
       } else {
@@ -138,12 +133,12 @@ export default function TestInfoScreen(): JSX.Element {
   // Handle starting the test
   const handleStartTest = async (): Promise<void> => {
     if (!testId) return;
-    
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
+
     // Mark this test as completed when the user starts it
     await saveCompletedTest(testId);
-    
+
     await router.push({
       pathname: '/(main)/test',
       params: { testId },
@@ -164,7 +159,7 @@ export default function TestInfoScreen(): JSX.Element {
   // Format test details for display
   const formatTestDetails = (): TestDetail[] => {
     if (!testInfo) return [];
-    
+
     return [
       { label: 'Duration', value: `${testInfo.limitTime} minutes` },
       { label: 'Questions', value: testInfo.totalQuestion.toString() },
@@ -175,7 +170,7 @@ export default function TestInfoScreen(): JSX.Element {
   // Helper function to get parts display text
   const getPartsDisplay = (topicsOverview: TestInfo['topicsOverview']): string => {
     if (!topicsOverview || topicsOverview.length === 0) return 'All parts';
-    
+
     const partNumbers = topicsOverview.map(topic => `Part ${topic.partNum}`);
     return partNumbers.join(', ');
   };
@@ -200,7 +195,7 @@ export default function TestInfoScreen(): JSX.Element {
         <Ionicons name="alert-circle-outline" size={60} color="#ef4444" />
         <Text className="text-xl font-semibold text-gray-800 mt-4">Error Loading Test</Text>
         <Text className="text-base text-gray-500 text-center mt-2 mx-8">{error}</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           className="bg-blue-500 py-2.5 px-5 rounded-lg mt-5"
           onPress={() => testId && fetchTestInfo(testId)}
         >
@@ -216,7 +211,7 @@ export default function TestInfoScreen(): JSX.Element {
         <Ionicons name="information-circle-outline" size={60} color="#f59e0b" />
         <Text className="text-xl font-semibold text-gray-800 mt-4">No Test Found</Text>
         <Text className="text-base text-gray-500 text-center mt-2 mx-8">Test information could not be found.</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           className="bg-blue-500 py-2.5 px-5 rounded-lg mt-5"
           onPress={() => router.back()}
         >
@@ -233,7 +228,7 @@ export default function TestInfoScreen(): JSX.Element {
       <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
         <View className="bg-white rounded-xl p-4 mb-4 shadow-sm">
           <Text className="text-2xl font-bold text-gray-800 mb-3">{testInfo.name}</Text>
-          
+
           <View className="flex-row flex-wrap mb-4 gap-2">
             {isCompleted && (
               <View className="bg-emerald-500 py-1 px-2 rounded flex-row items-center gap-1">
@@ -242,8 +237,8 @@ export default function TestInfoScreen(): JSX.Element {
               </View>
             )}
           </View>
-          
-          
+
+
           <View className="flex-row justify-around pt-2 border-t border-gray-100">
             <View className="items-center">
               <Text className="text-lg font-bold text-gray-800">{testInfo.totalUserAttempt}</Text>
@@ -255,25 +250,30 @@ export default function TestInfoScreen(): JSX.Element {
             </View>
           </View>
         </View>
-        
+
         <View className="bg-white rounded-xl p-4 mb-4 shadow-sm">
           <Text className="text-lg font-semibold text-gray-800 mb-3">Test Details</Text>
           {testDetails.map((detail, index) => (
-            <View key={index} className="flex-row justify-between py-2 border-b border-gray-100">
-              <Text className="text-base text-gray-500">{detail.label}:</Text>
-              <Text className="text-base text-gray-800 font-medium">{detail.value}</Text>
+            // Use items-start for better alignment if text wraps to multiple lines
+            <View key={index} className="flex-row justify-between items-start py-2 border-b border-gray-100 last:border-b-0">
+              <Text className="text-base text-gray-500 mr-4">{detail.label}:</Text>
+
+              <Text className="flex-1 text-base text-gray-800 font-medium text-right">
+                {detail.value}
+              </Text>
+
             </View>
           ))}
         </View>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           className={`${isCompleted ? 'bg-emerald-600' : 'bg-blue-500'} rounded-xl py-4 mb-6 flex-row justify-center items-center gap-2 shadow-sm`}
           onPress={handleStartTest}
         >
-          <Ionicons 
-            name={isCompleted ? "refresh" : "play-circle-outline"} 
-            size={20} 
-            color="#ffffff" 
+          <Ionicons
+            name={isCompleted ? "refresh" : "play-circle-outline"}
+            size={20}
+            color="#ffffff"
           />
           <Text className="text-lg font-semibold text-white">
             {isCompleted ? 'Take Test Again' : 'Start Test'}
