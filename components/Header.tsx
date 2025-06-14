@@ -2,7 +2,7 @@ import useAuth from "@/hooks/useAuth";
 import { FontAwesome, Fontisto } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, TouchableOpacity, View } from "react-native";
 
 export default function Header() {
 
@@ -12,7 +12,6 @@ export default function Header() {
 
   const { user } = useAuth()
 
-  // console.log(user?.token)
 
   return (
     <View className="flex flex-row items-center justify-between px-4 py-1 bg-[white]">
